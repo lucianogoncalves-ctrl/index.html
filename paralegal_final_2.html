@@ -420,6 +420,7 @@ input,select,textarea,button{font-family:var(--sans)}
 
 <div class="toast-wrap" id="toasts"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const DEFAULT_LABELS={nav_todos:'Todos os processos',nav_ativo:'Ativos',nav_prefeitura:'Pend. prefeitura',nav_exigencia:'Em exigência',nav_encerramento:'Pend. encerramento',st_andamento:'Em andamento',st_analise:'Em análise',st_assinatura:'Enviado p/ assinatura',st_concluido:'Concluído',st_exigencia:'Em exigência',st_aguardando:'Aguardando',enc_fin:'Informado ao financeiro',enc_op:'Informado à operação'};
 let LABELS={...DEFAULT_LABELS};
@@ -428,14 +429,14 @@ function applyLabel(input){const key=input.dataset.key;LABELS[key]=input.value||
 function resetLabels(){LABELS={...DEFAULT_LABELS};document.querySelectorAll('.cfg-lbl-input').forEach(inp=>{inp.value=''});document.querySelectorAll('.nb-lbl').forEach(el=>{el.textContent=DEFAULT_LABELS[el.dataset.key]||el.textContent});render();toast('Nomes restaurados ao padrão','success')}
 function setTheme(t){document.documentElement.setAttribute('data-theme',t);['light','dark'].forEach(x=>{document.getElementById('btn-'+x)?.classList.toggle('active',x===t);document.getElementById('to-'+x)?.classList.toggle('active',x===t)})}
 
-const SB_URL='https://duuavlthmjnmaxixrtwi.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1dWF2bHRobWpubWF4aXhydHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwODYzMjksImV4cCI6MjA5MzY2MjMyOX0.lNbuDtPcOiG2oYPL7C8U9gzGz3tPymPu3MlHUVVRd38';
-const SB_HDR={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
-
-async function sbGet(table,qs=''){const r=await fetch(`${SB_URL}/rest/v1/${table}?${qs}`,{headers:SB_HDR});return r.ok?r.json():[];}
-async function sbPost(table,body){const r=await fetch(`${SB_URL}/rest/v1/${table}`,{method:'POST',headers:SB_HDR,body:JSON.stringify(body)});return r.ok?r.json():[];}
-async function sbPatch(table,filter,body){await fetch(`${SB_URL}/rest/v1/${table}?${filter}`,{method:'PATCH',headers:SB_HDR,body:JSON.stringify(body)});}
-async function sbDelete(table,filter){await fetch(`${SB_URL}/rest/v1/${table}?${filter}`,{method:'DELETE',headers:SB_HDR});}
+const _SB=window.supabase.createClient(
+  'https://duuavlthmjnmaxixrtwi.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1dWF2bHRobWpubWF4aXhydHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwODYzMjksImV4cCI6MjA5MzY2MjMyOX0.lNbuDtPcOiG2oYPL7C8U9gzGz3tPymPu3MlHUVVRd38'
+);
+async function sbGet(table,order='created_at'){const{data,error}=await _SB.from(table).select('*').order(order);if(error){console.error('sbGet error:',table,JSON.stringify(error));return[];}return data||[];}
+async function sbPost(table,body){const{data,error}=await _SB.from(table).insert(body).select();if(error){console.error('sbPost error:',table,JSON.stringify(error));return[];}return data||[];}
+async function sbPatch(table,filter,body){const id=parseInt(filter.replace('id=eq.',''));const{error}=await _SB.from(table).update({...body}).eq('id',id);if(error)console.error('sbPatch error:',JSON.stringify(error));}
+async function sbDelete(table,filter){const id=parseInt(filter.replace('id=eq.',''));const{error}=await _SB.from(table).delete().eq('id',id);if(error)console.error('sbDelete error:',JSON.stringify(error));}
 
 const MONO="'DM Mono',monospace";
 const SC={andamento:'sb-andamento',analise:'sb-analise',assinatura:'sb-assinatura',concluido:'sb-concluido',exigencia:'sb-exigencia',aguardando:'sb-aguardando'};
@@ -454,22 +455,34 @@ function showLoading(){document.getElementById('list').innerHTML='<div class="em
 async function loadData(){
   showLoading();
   try{
-    const[processos,historico]=await Promise.all([
-      sbGet('paralegal_processos','order=created_at.asc'),
-      sbGet('paralegal_historico','order=created_at.asc')
-    ]);
+    const processos=await sbGet('paralegal_processos');
+    const historico=await sbGet('paralegal_historico');
     P=(processos||[]).map(p=>({
-      id:p.id,nome:p.nome,cnpj:p.cnpj||'',tipo:p.tipo,status:p.status,cat:p.cat,fin:p.fin,op:p.op,
-      hist:(historico||[]).filter(h=>h.processo_id===p.id).map(h=>({id:h.id,ts:new Date(h.created_at).getTime(),status:h.status,obs:h.obs,tipo:h.tipo}))
+      id:p.id,
+      nome:p.nome||'',
+      cnpj:p.cnpj||'',
+      tipo:p.tipo||'',
+      status:p.status||'andamento',
+      cat:p.cat||'ativo',
+      fin:p.fin||false,
+      op:p.op||false,
+      hist:(historico||[]).filter(h=>h.processo_id===p.id).map(h=>({
+        id:h.id,
+        ts:new Date(h.created_at).getTime(),
+        status:h.status||'andamento',
+        obs:h.obs||'',
+        tipo:h.tipo||h.status||'andamento'
+      }))
     }));
+    P.forEach(p=>{if(!p.hist||p.hist.length===0){p.hist=[{id:0,ts:new Date(p.created_at||Date.now()).getTime(),status:p.status,obs:'Processo cadastrado.',tipo:'created'}]}});
     render();
   }catch(e){
-    toast('Erro ao carregar dados do servidor','danger');
+    console.error('loadData exception:',e);
+    P=[];
     render();
   }
 }
-
-setInterval(loadData, 30000);
+setInterval(loadData,30000);
 
 function isConcl(p){return p.cat==='prefeitura'||p.status==='concluido'}
 function counts(){return{todos:P.length,ativo:P.filter(p=>p.cat==='ativo').length,prefeitura:P.filter(p=>p.cat==='prefeitura').length,exigencia:P.filter(p=>p.status==='exigencia').length,encerramento:P.filter(p=>isConcl(p)&&(!p.fin||!p.op)).length}}
@@ -562,7 +575,7 @@ async function saveModal(){
     const[hist]=await sbPost('paralegal_historico',{processo_id:proc.id,status:st,obs,tipo:'created'});
     P.push({id:proc.id,nome,cnpj:document.getElementById('fc').value.trim(),tipo:document.getElementById('ft').value,status:st,cat,fin:false,op:false,hist:[{id:hist.id,ts:new Date(hist.created_at).getTime(),status:st,obs,tipo:'created'}]});
     toast('Processo criado','success');
-  } else {
+  }else{
     const p=P.find(x=>x.id===editId);if(!p)return;
     const ns=document.getElementById('fs').value;
     const novosDados={nome,cnpj:document.getElementById('fc').value.trim(),tipo:document.getElementById('ft').value,cat:document.getElementById('fcat').value,status:ns,updated_at:new Date().toISOString()};
