@@ -482,7 +482,7 @@ async function loadData(){
     render();
   }
 }
-setInterval(loadData,30000);
+setInterval(()=>{const algumAberto=Object.values(expanded).some(v=>v);const modalAberto=document.getElementById('modal-ov').classList.contains('open');const cfgAberto=document.getElementById('cfg-ov').classList.contains('open');if(!algumAberto&&!modalAberto&&!cfgAberto)loadData();},30000);
 
 function isConcl(p){return p.cat==='prefeitura'||p.status==='concluido'}
 function counts(){return{todos:P.length,ativo:P.filter(p=>p.cat==='ativo').length,prefeitura:P.filter(p=>p.cat==='prefeitura').length,exigencia:P.filter(p=>p.status==='exigencia').length,encerramento:P.filter(p=>isConcl(p)&&(!p.fin||!p.op)).length}}
