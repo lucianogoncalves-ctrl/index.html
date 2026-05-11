@@ -1,24 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paralegal — Controle de Processos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.14.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --gold:#B8973A;--gold-light:#F5EDD4;--gold-mid:#D4AE5A;--gold-dark:#8A6E26;--gold-glow:rgba(184,151,58,.15);
+  --ink:#141414;--ink-2:#2e2e2e;--ink-3:#666666;--ink-4:#999999;--ink-5:#bbbbbb;
+  --paper:#F4F3F0;--surface:#FFFFFF;--surface-2:#EFEFED;--surface-3:#E6E5E2;
+  --sidebar-bg:#141414;--sidebar-border:rgba(255,255,255,.07);
+  --border:rgba(0,0,0,.08);--border-2:rgba(0,0,0,.14);--border-3:rgba(0,0,0,.22);
+  --r-sm:6px;--r-md:10px;--r-lg:16px;--r-xl:22px;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;
+  --s-andamento-bg:#EFF6FF;--s-andamento-c:#1D4ED8;--s-andamento-b:#BFDBFE;
+  --s-analise-bg:#FFFBEB;--s-analise-c:#B45309;--s-analise-b:#FDE68A;
+  --s-assinatura-bg:#F5F3FF;--s-assinatura-c:#6D28D9;--s-assinatura-b:#DDD6FE;
+  --s-concluido-bg:#F0FDF4;--s-concluido-c:#166534;--s-concluido-b:#BBF7D0;
+  --s-exigencia-bg:#FFF7ED;--s-exigencia-c:#C2410C;--s-exigencia-b:#FED7AA;
+  --s-aguardando-bg:#F9FAFB;--s-aguardando-c:#4B5563;--s-aguardando-b:#E5E7EB;
+}
+[data-theme="dark"]{
+  --gold:#C9A84C;--gold-light:#2A2210;--gold-mid:#A07830;--gold-dark:#E8C86A;--gold-glow:rgba(201,168,76,.18);
+  --ink:#F0EFEA;--ink-2:#D0CFC8;--ink-3:#8A8A82;--ink-4:#5C5C56;--ink-5:#3A3A36;
+  --paper:#111110;--surface:#1C1C1A;--surface-2:#252523;--surface-3:#2E2E2B;
+  --sidebar-bg:#0D0D0C;--sidebar-border:rgba(255,255,255,.06);
+  --border:rgba(255,255,255,.07);--border-2:rgba(255,255,255,.13);--border-3:rgba(255,255,255,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5;transition:background .25s,color .25s}
+input,select,textarea,button{font-family:var(--sans)}
+.layout{display:flex;height:100vh;overflow:hidden}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.content-scroll{flex:1;overflow-y:auto}
+.sidebar{width:228px;flex-shrink:0;background:var(--sidebar-bg);display:flex;flex-direction:column;height:100vh;overflow:hidden;transition:background .25s}
+.sb-logo{padding:26px 22px 20px;border-bottom:1px solid var(--sidebar-border)}
+.sb-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:3px}
+.sb-icon{width:30px;height:30px;border-radius:var(--r-sm);background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:15px;color:#111;flex-shrink:0}
+.sb-name{font-size:14px;font-weight:600;color:#fff;letter-spacing:-.02em}
+.sb-sub{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.07em;text-transform:uppercase}
+.sb-nav{padding:14px 10px;flex:1;overflow-y:auto}
+.sb-section{font-size:9px;font-weight:600;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;padding:0 12px;margin:14px 0 5px}
+.sb-section:first-child{margin-top:0}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:var(--r-md);color:rgba(255,255,255,.45);font-size:12px;font-weight:400;cursor:pointer;transition:all .14s;border:none;background:transparent;width:100%;text-align:left}
+.nav-btn i{font-size:16px;flex-shrink:0}
+.nav-btn .nc{margin-left:auto;background:rgba(255,255,255,.09);color:rgba(255,255,255,.35);font-size:10px;padding:1px 7px;border-radius:20px;font-family:var(--mono)}
+.nav-btn:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.75)}
+.nav-btn.active{background:var(--gold);color:#111;font-weight:500}
+.nav-btn.active .nc{background:rgba(0,0,0,.2);color:rgba(0,0,0,.7)}
+.sb-footer{padding:12px 10px;border-top:1px solid var(--sidebar-border);display:flex;flex-direction:column;gap:6px}
+.new-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px;background:var(--gold);color:#111;font-size:13px;font-weight:600;border:none;border-radius:var(--r-md);cursor:pointer;transition:all .14s;letter-spacing:-.01em}
+.new-btn:hover{background:var(--gold-mid)}
+.new-btn i{font-size:15px}
+.sb-theme-cfg{display:flex;gap:6px}
+.icon-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border:1px solid rgba(255,255,255,.12);border-radius:var(--r-md);background:transparent;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;transition:all .14s}
+.icon-btn i{font-size:15px}
+.icon-btn:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.25)}
+.icon-btn.active{background:var(--gold-glow);border-color:var(--gold);color:var(--gold)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 26px;display:flex;align-items:center;gap:14px;flex-shrink:0;transition:background .25s}
+.page-title{font-size:15px;font-weight:500;flex:1;color:var(--ink)}
+.page-title em{color:var(--ink-4);font-style:normal;font-size:12px;font-family:var(--mono);margin-left:6px}
+.search-wrap{position:relative;width:250px}
+.search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-4);font-size:14px;pointer-events:none}
+.search-wrap input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-2);color:var(--ink);font-size:13px;outline:none;transition:all .15s}
+.search-wrap input:focus{border-color:var(--gold);background:var(--surface);box-shadow:0 0 0 3px var(--gold-glow)}
+.search-wrap input::placeholder{color:var(--ink-4)}
+
+/* botão tela cheia */
+.btn-newtab{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 13px;border:1px solid var(--border-2);border-radius:var(--r-md);
+  background:var(--surface-2);color:var(--ink-3);cursor:pointer;
+  transition:all .15s;flex-shrink:0;font-size:12px;font-weight:500;white-space:nowrap;
+}
+.btn-newtab i{font-size:15px}
+.btn-newtab:hover{background:var(--gold-light);border-color:var(--gold);color:var(--gold-dark)}
+
+.metrics-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);flex-shrink:0}
+.met{background:var(--surface);padding:18px 22px;cursor:pointer;transition:background .15s;position:relative;border-bottom:2px solid transparent}
+.met:hover{background:var(--surface-2)}
+.met.on{background:var(--gold-light);border-bottom-color:var(--gold)}
+.met-n{font-size:26px;font-weight:600;letter-spacing:-.04em;font-family:var(--mono);color:var(--ink);margin-bottom:3px;transition:color .15s}
+.met.on .met-n{color:var(--gold)}
+.met-l{font-size:11px;color:var(--ink-3);letter-spacing:.01em}
+.met-pip{position:absolute;top:16px;right:16px;width:6px;height:6px;border-radius:50%}
+.pip-gold{background:var(--gold)}.pip-warn{background:#C27803}.pip-red{background:#C53030}.pip-gra{background:var(--ink-4)}
+.content{padding:22px 26px}
+.sec-hd{display:flex;align-items:center;gap:10px;margin:22px 0 10px}
+.sec-hd:first-child{margin-top:0}
+.sec-hd-text{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
+.sec-hd-line{flex:1;height:1px;background:var(--border-2)}
+.sec-hd-n{font-size:10px;color:var(--ink-4);font-family:var(--mono)}
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:7px;overflow:hidden;transition:border-color .18s,box-shadow .18s}
+.pcard:hover{border-color:var(--border-3)}
+.pcard.open{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-glow)}
+.pcard-head{display:flex;align-items:center;gap:13px;padding:15px 17px;cursor:pointer;user-select:none}
+.av{width:38px;height:38px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;letter-spacing:-.02em}
+.pc-meta{flex:1;min-width:0}
+.pc-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.pc-tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap;border:1px solid}
+.t-tipo{background:var(--gold-light);color:var(--gold-dark);border-color:rgba(184,151,58,.3)}
+[data-theme="dark"] .t-tipo{color:var(--gold-dark)}
+.t-cnpj{background:var(--surface-2);color:var(--ink-3);border-color:var(--border-2);font-family:var(--mono);font-size:10px}
+.t-ativo{background:#F0FFF4;color:#276749;border-color:#A7D8C0}
+.t-pref{background:#FFFBEB;color:#92400E;border-color:#FCD34D}
+[data-theme="dark"] .t-ativo{background:#0d2e1a;color:#6ee7b7;border-color:#065f46}
+[data-theme="dark"] .t-pref{background:#2a1e00;color:#fbbf24;border-color:#854d0e}
+.pc-right{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.time-lbl{font-size:11px;color:var(--ink-4);font-family:var(--mono)}
+.sbadge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;white-space:nowrap;border:1px solid}
+.sb-andamento{background:var(--s-andamento-bg);color:var(--s-andamento-c);border-color:var(--s-andamento-b)}
+.sb-analise{background:var(--s-analise-bg);color:var(--s-analise-c);border-color:var(--s-analise-b)}
+.sb-assinatura{background:var(--s-assinatura-bg);color:var(--s-assinatura-c);border-color:var(--s-assinatura-b)}
+.sb-concluido{background:var(--s-concluido-bg);color:var(--s-concluido-c);border-color:var(--s-concluido-b)}
+.sb-exigencia{background:var(--s-exigencia-bg);color:var(--s-exigencia-c);border-color:var(--s-exigencia-b)}
+.sb-aguardando{background:var(--s-aguardando-bg);color:var(--s-aguardando-c);border-color:var(--s-aguardando-b)}
+.chev{font-size:17px;color:var(--ink-4);transition:transform .2s}
+.chev.open{transform:rotate(180deg)}
+.pcard-body{border-top:1px solid var(--border);display:none}
+.pcard-body.open{display:block}
+.body-grid{display:grid;grid-template-columns:1fr 310px;min-height:260px}
+.body-left{padding:20px 22px;border-right:1px solid var(--border)}
+.body-right{padding:20px 22px;background:var(--surface-2)}
+.tl-hd{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.tl-hd-n{font-family:var(--mono);font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-4)}
+.tl-wrap{position:relative;padding-left:24px}
+.tl-line{position:absolute;left:7px;top:4px;bottom:12px;width:1px;background:var(--border-2)}
+.tl-entry{position:relative;margin-bottom:14px}
+.tl-entry:last-child{margin-bottom:0}
+.tl-dot{position:absolute;left:-20px;top:5px;width:10px;height:10px;border-radius:50%;border:2px solid;background:var(--surface)}
+.td-created{border-color:#10B981}.td-andamento{border-color:#3B82F6}.td-analise{border-color:#F59E0B}
+.td-assinatura{border-color:#8B5CF6}.td-concluido{border-color:#22C55E}.td-exigencia{border-color:#F97316}.td-aguardando{border-color:#9CA3AF}
+.tl-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.tl-st{font-size:12px;font-weight:500;color:var(--ink)}
+.tl-dt{font-size:10px;color:var(--ink-4);font-family:var(--mono)}
+.tl-obs{font-size:12px;color:var(--ink-3);line-height:1.6}
+.blk-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-4);margin-bottom:10px}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)}
+.drow:last-child{border:none}
+.dkey{font-size:12px;color:var(--ink-3)}
+.dval{font-size:12px;font-weight:500;color:var(--ink);text-align:right;max-width:155px;word-break:break-word}
+.dval.mono{font-family:var(--mono);font-size:11px}
+.enc-blk{margin:16px 0}
+.enc-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:5px;background:var(--surface);cursor:pointer;transition:all .14s}
+.enc-item:hover{border-color:var(--border-3)}
+.enc-item.done{background:var(--gold-light);border-color:var(--gold)}
+.enc-left{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:var(--ink-2)}
+.enc-left i{font-size:15px}
+.enc-item.done .enc-left{color:var(--gold-dark)}
+[data-theme="dark"] .enc-item.done .enc-left{color:var(--gold)}
+.enc-chk{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border-2);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--ink-4)}
+.enc-item.done .enc-chk{background:var(--gold);border-color:var(--gold);color:#111}
+.add-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:13px;margin-top:16px}
+.add-box-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-4);margin-bottom:9px;display:flex;align-items:center;gap:5px}
+.add-box textarea{width:100%;min-height:68px;resize:vertical;border:1px solid var(--border-2);border-radius:var(--r-sm);padding:8px 10px;font-size:12px;color:var(--ink);background:var(--surface-2);outline:none;transition:all .15s;margin-bottom:8px;line-height:1.6}
+.add-box textarea:focus{border-color:var(--gold);background:var(--surface);box-shadow:0 0 0 2px var(--gold-glow)}
+.add-box textarea::placeholder{color:var(--ink-4)}
+.add-row{display:flex;gap:7px;align-items:center}
+.add-row select{flex:1;padding:7px 10px;border:1px solid var(--border-2);border-radius:var(--r-sm);background:var(--surface-2);color:var(--ink);font-size:12px;outline:none;transition:border-color .15s}
+.add-row select:focus{border-color:var(--gold)}
+.pc-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 22px;border-top:1px solid var(--border);background:var(--surface-2)}
+.foot-left{display:flex;gap:7px}
+.foot-ts{font-size:11px;color:var(--ink-4);font-family:var(--mono)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--ink);font-size:12px;font-weight:500;cursor:pointer;transition:all .14s;white-space:nowrap}
+.btn i{font-size:14px}
+.btn:hover{background:var(--surface-2);border-color:var(--border-3)}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:#111}
+.btn-gold:hover{background:var(--gold-mid);border-color:var(--gold-mid)}
+.btn-sm{padding:5px 11px;font-size:11px}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--ink-3)}
+.btn-ghost:hover{background:var(--surface-2);border-color:var(--border);color:var(--ink)}
+.btn-danger{background:#fff1f2;border-color:#fda4af;color:#be123c}
+.btn-danger:hover{background:#ffe4e6;border-color:#fb7185}
+[data-theme="dark"] .btn-danger{background:#3a1010;border-color:#7f1d1d;color:#fca5a5}
+[data-theme="dark"] .btn-danger:hover{background:#450a0a;border-color:#991b1b}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:flex-start;justify-content:center;padding:50px 16px;overflow-y:auto}
+.modal-ov.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r-xl);border:1px solid var(--border-2);width:100%;max-width:520px;overflow:hidden;transition:background .25s}
+.modal-hd{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-hd h2{font-size:16px;font-weight:600;letter-spacing:-.02em}
+.modal-hd h2 span{color:var(--gold);margin-right:6px}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--ink-3);font-size:19px;padding:3px;border-radius:var(--r-sm)}
+.modal-close:hover{background:var(--surface-2);color:var(--ink)}
+.modal-body{padding:20px 24px}
+.modal-ft{padding:14px 24px;border-top:1px solid var(--border);background:var(--surface-2);display:flex;justify-content:flex-end;gap:7px}
+.fg{margin-bottom:13px}
+.fg label{font-size:10px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;padding:9px 12px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-2);color:var(--ink);font-size:13px;outline:none;transition:all .15s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold);background:var(--surface);box-shadow:0 0 0 3px var(--gold-glow)}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--ink-4)}
+.fg textarea{min-height:76px;resize:vertical;line-height:1.6}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.cfg-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300}
+.cfg-ov.open{display:block}
+.cfg-drawer{position:fixed;top:0;right:0;bottom:0;width:340px;background:var(--surface);border-left:1px solid var(--border-2);z-index:301;transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden}
+.cfg-ov.open .cfg-drawer{transform:translateX(0)}
+.cfg-hd{padding:20px 22px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.cfg-hd h3{font-size:15px;font-weight:600;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.cfg-hd h3 i{color:var(--gold);font-size:18px}
+.cfg-body{flex:1;overflow-y:auto;padding:20px 22px}
+.cfg-section{margin-bottom:26px}
+.cfg-section-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-4);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.cfg-section-title i{font-size:13px}
+.cfg-lbl-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.cfg-lbl-key{font-size:11px;color:var(--ink-3);min-width:110px;flex-shrink:0}
+.cfg-lbl-input{flex:1;padding:7px 10px;border:1px solid var(--border-2);border-radius:var(--r-sm);background:var(--surface-2);color:var(--ink);font-size:12px;outline:none;transition:border-color .15s}
+.cfg-lbl-input:focus{border-color:var(--gold);background:var(--surface)}
+.theme-toggle{display:flex;gap:8px}
+.theme-opt{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-2);color:var(--ink-3);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.theme-opt i{font-size:17px}
+.theme-opt.active{background:var(--gold-light);border-color:var(--gold);color:var(--gold-dark)}
+[data-theme="dark"] .theme-opt.active{color:var(--gold)}
+.cfg-reset{width:100%;padding:9px;border:1px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--ink-3);font-size:12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.cfg-reset:hover{background:var(--surface-2);color:var(--ink);border-color:var(--border-3)}
+.cfg-ft{padding:14px 22px;border-top:1px solid var(--border);flex-shrink:0;background:var(--surface-2)}
+.cnf-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;align-items:center;justify-content:center}
+.cnf-ov.open{display:flex}
+.cnf-box{background:var(--surface);border-radius:var(--r-xl);border:1px solid var(--border-2);padding:30px 32px;max-width:370px;width:90%;text-align:center}
+.cnf-icon{font-size:34px;color:#dc2626;margin-bottom:12px}
+.cnf-title{font-size:16px;font-weight:600;margin-bottom:8px}
+.cnf-desc{font-size:13px;color:var(--ink-3);margin-bottom:22px;line-height:1.6}
+.cnf-name{font-weight:600;color:var(--ink)}
+.cnf-actions{display:flex;gap:10px;justify-content:center}
+.toast-wrap{position:fixed;bottom:22px;right:22px;z-index:999;display:flex;flex-direction:column;gap:7px}
+.toast{background:var(--ink-2);color:#fff;padding:10px 15px;border-radius:var(--r-md);font-size:13px;display:flex;align-items:center;gap:8px;animation:tIn .2s ease}
+.toast i{font-size:15px}
+.toast.success{background:#166534}
+.toast.danger{background:#991b1b}
+@keyframes tIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:60px 20px;color:var(--ink-4)}
+.empty i{font-size:38px;display:block;margin-bottom:10px;opacity:.35}
+.empty-t{font-size:15px;font-weight:500;color:var(--ink-3);margin-bottom:5px}
+.empty-s{font-size:13px}
+@media(max-width:860px){.sidebar{display:none}.body-grid{grid-template-columns:1fr}.body-right{border-top:1px solid var(--border)}.metrics-strip{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.content{padding:14px}.topbar{padding:11px 14px}.fr2{grid-template-columns:1fr}.metrics-strip{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-row">
+        <div class="sb-icon"><i class="ti ti-scale"></i></div>
+        <span class="sb-name">Paralegal</span>
+      </div>
+      <div class="sb-sub">Controle de processos</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Visualizar</div>
+      <button class="nav-btn active" data-f="todos" onclick="setNav(this)">
+        <i class="ti ti-layout-list"></i>
+        <span class="nb-lbl" data-key="nav_todos">Todos os processos</span>
+        <span class="nc" id="nc-todos">0</span>
+      </button>
+      <button class="nav-btn" data-f="ativo" onclick="setNav(this)">
+        <i class="ti ti-loader"></i>
+        <span class="nb-lbl" data-key="nav_ativo">Ativos</span>
+        <span class="nc" id="nc-ativo">0</span>
+      </button>
+      <button class="nav-btn" data-f="prefeitura" onclick="setNav(this)">
+        <i class="ti ti-building"></i>
+        <span class="nb-lbl" data-key="nav_prefeitura">Pend. prefeitura</span>
+        <span class="nc" id="nc-prefeitura">0</span>
+      </button>
+      <div class="sb-section">Alertas</div>
+      <button class="nav-btn" data-f="exigencia" onclick="setNav(this)">
+        <i class="ti ti-alert-triangle"></i>
+        <span class="nb-lbl" data-key="nav_exigencia">Em exigência</span>
+        <span class="nc" id="nc-exigencia">0</span>
+      </button>
+      <button class="nav-btn" data-f="encerramento" onclick="setNav(this)">
+        <i class="ti ti-checklist"></i>
+        <span class="nb-lbl" data-key="nav_encerramento">Pend. encerramento</span>
+        <span class="nc" id="nc-encerramento">0</span>
+      </button>
+    </div>
+    <div class="sb-footer">
+      <button class="new-btn" onclick="openNew()">
+        <i class="ti ti-plus"></i> Novo processo
+      </button>
+      <div class="sb-theme-cfg">
+        <button class="icon-btn active" id="btn-light" onclick="setTheme('light')" title="Modo claro">
+          <i class="ti ti-sun"></i> Claro
+        </button>
+        <button class="icon-btn" id="btn-dark" onclick="setTheme('dark')" title="Modo escuro">
+          <i class="ti ti-moon"></i> Escuro
+        </button>
+        <button class="icon-btn" onclick="openCfg()" title="Configurações">
+          <i class="ti ti-settings"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title" id="page-title">Todos os processos</div>
+      <div class="search-wrap">
+        <i class="ti ti-search"></i>
+        <input type="text" id="q" placeholder="Buscar empresa, CNPJ, tipo..." oninput="render()">
+      </div>
+      <button class="btn-newtab" onclick="abrirTelaCheia()" title="Abrir em nova aba">
+        <i class="ti ti-external-link"></i> Tela cheia
+      </button>
+    </div>
+
+    <div class="metrics-strip" id="metrics"></div>
+    <div class="content-scroll">
+      <div class="content" id="list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROCESSO -->
+<div class="modal-ov" id="modal-ov" onclick="if(event.target===this)closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hd">
+      <h2><span>⊹</span><span id="modal-title">Novo processo</span></h2>
+      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="fg"><label>Nome da empresa</label><input type="text" id="fn" placeholder="Razão social completa"></div>
+      <div class="fr2">
+        <div class="fg"><label>CNPJ</label><input type="text" id="fc" placeholder="00.000.000/0001-00"></div>
+        <div class="fg"><label>Categoria</label>
+          <select id="fcat"><option value="ativo">Ativo</option><option value="prefeitura">Pend. prefeitura / bombeiros</option></select>
+        </div>
+      </div>
+      <div class="fr2">
+        <div class="fg"><label>Tipo de processo</label>
+          <select id="ft">
+            <option>CONSTITUIÇÃO</option><option>ALTERAÇÃO</option><option>ALTERAÇÃO POR TRANSFORMAÇÃO</option>
+            <option>TRANSFORMAÇÃO</option><option>BAIXA DE FILIAL</option>
+            <option>DESENQUADRAMENTO + ALTERAÇÃO POR TRANSFORMAÇÃO</option>
+            <option>VIGILÂNCIA SANITÁRIA</option><option>OUTRO</option>
+          </select>
+        </div>
+        <div class="fg"><label>Status</label>
+          <select id="fs">
+            <option value="andamento">Em andamento</option><option value="analise">Em análise</option>
+            <option value="assinatura">Enviado p/ assinatura</option><option value="concluido">Concluído</option>
+            <option value="exigencia">Em exigência</option><option value="aguardando">Aguardando</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Observação inicial</label><textarea id="fo" placeholder="Descreva o andamento atual..."></textarea></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-gold" onclick="saveModal()"><i class="ti ti-check"></i> Salvar processo</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="cfg-ov" id="cfg-ov" onclick="if(event.target===this)closeCfg()">
+  <div class="cfg-drawer" onclick="event.stopPropagation()">
+    <div class="cfg-hd">
+      <h3><i class="ti ti-settings"></i> Configurações</h3>
+      <button class="modal-close" onclick="closeCfg()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="cfg-body">
+      <div class="cfg-section">
+        <div class="cfg-section-title"><i class="ti ti-palette"></i> Aparência</div>
+        <div class="theme-toggle">
+          <div class="theme-opt active" id="to-light" onclick="setTheme('light')"><i class="ti ti-sun"></i> Claro</div>
+          <div class="theme-opt" id="to-dark" onclick="setTheme('dark')"><i class="ti ti-moon"></i> Escuro</div>
+        </div>
+      </div>
+      <div class="cfg-section">
+        <div class="cfg-section-title"><i class="ti ti-tag"></i> Renomear seções de navegação</div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Todos os processos</span><input class="cfg-lbl-input" data-key="nav_todos" placeholder="Todos os processos" oninput="applyLabel(this)"></div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Ativos</span><input class="cfg-lbl-input" data-key="nav_ativo" placeholder="Ativos" oninput="applyLabel(this)"></div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Pend. prefeitura</span><input class="cfg-lbl-input" data-key="nav_prefeitura" placeholder="Pend. prefeitura" oninput="applyLabel(this)"></div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Em exigência</span><input class="cfg-lbl-input" data-key="nav_exigencia" placeholder="Em exigência" oninput="applyLabel(this)"></div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Pend. encerramento</span><input class="cfg-lbl-input" data-key="nav_encerramento" placeholder="Pend. encerramento" oninput="applyLabel(this)"></div>
+      </div>
+      <div class="cfg-section">
+        <div class="cfg-section-title"><i class="ti ti-circle-dot"></i> Renomear status dos processos</div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Em andamento</span><input class="cfg-lbl-input" data-key="st_andamento" placeholder="Em andamento" oninput="applyLabel(this)"></div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Em análise</span><input class="cfg-lbl-input" data-key="st_analise" placeholder="Em análise" oninput="applyLabel(this)"></div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Enviado p/ assinatura</span><input class="cfg-lbl-input" data-key="st_assinatura" placeholder="Enviado p/ assinatura" oninput="applyLabel(this)"></div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Concluído</span><input class="cfg-lbl-input" data-key="st_concluido" placeholder="Concluído" oninput="applyLabel(this)"></div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Em exigência</span><input class="cfg-lbl-input" data-key="st_exigencia" placeholder="Em exigência" oninput="applyLabel(this)"></div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Aguardando</span><input class="cfg-lbl-input" data-key="st_aguardando" placeholder="Aguardando" oninput="applyLabel(this)"></div>
+      </div>
+      <div class="cfg-section">
+        <div class="cfg-section-title"><i class="ti ti-checklist"></i> Renomear tarefas de encerramento</div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Financeiro</span><input class="cfg-lbl-input" data-key="enc_fin" placeholder="Informado ao financeiro" oninput="applyLabel(this)"></div>
+        <div class="cfg-lbl-row"><span class="cfg-lbl-key">Operação</span><input class="cfg-lbl-input" data-key="enc_op" placeholder="Informado à operação" oninput="applyLabel(this)"></div>
+      </div>
+      <button class="cfg-reset" onclick="resetLabels()"><i class="ti ti-refresh"></i> Restaurar nomes originais</button>
+    </div>
+    <div class="cfg-ft">
+      <button class="btn btn-gold" style="width:100%" onclick="closeCfg()"><i class="ti ti-check"></i> Fechar configurações</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="cnf-ov" id="cnf-ov">
+  <div class="cnf-box">
+    <div class="cnf-icon"><i class="ti ti-trash"></i></div>
+    <div class="cnf-title">Excluir processo?</div>
+    <div class="cnf-desc">O processo <span class="cnf-name" id="cnf-name"></span> e todo o seu histórico serão removidos permanentemente.</div>
+    <div class="cnf-actions">
+      <button class="btn" onclick="closeCnf()">Cancelar</button>
+      <button class="btn btn-danger" id="cnf-ok"><i class="ti ti-trash"></i> Excluir</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+const DEFAULT_LABELS={nav_todos:'Todos os processos',nav_ativo:'Ativos',nav_prefeitura:'Pend. prefeitura',nav_exigencia:'Em exigência',nav_encerramento:'Pend. encerramento',st_andamento:'Em andamento',st_analise:'Em análise',st_assinatura:'Enviado p/ assinatura',st_concluido:'Concluído',st_exigencia:'Em exigência',st_aguardando:'Aguardando',enc_fin:'Informado ao financeiro',enc_op:'Informado à operação'};
+let LABELS={...DEFAULT_LABELS};
+function L(key){return LABELS[key]||DEFAULT_LABELS[key]||key}
+function applyLabel(input){const key=input.dataset.key;LABELS[key]=input.value||DEFAULT_LABELS[key];document.querySelectorAll(`.nb-lbl[data-key="${key}"]`).forEach(el=>el.textContent=LABELS[key]);render()}
+function resetLabels(){LABELS={...DEFAULT_LABELS};document.querySelectorAll('.cfg-lbl-input').forEach(inp=>{inp.value=''});document.querySelectorAll('.nb-lbl').forEach(el=>{el.textContent=DEFAULT_LABELS[el.dataset.key]||el.textContent});render();toast('Nomes restaurados ao padrão','success')}
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);['light','dark'].forEach(x=>{document.getElementById('btn-'+x)?.classList.toggle('active',x===t);document.getElementById('to-'+x)?.classList.toggle('active',x===t)})}
+
 const SB_URL='https://duuavlthmjnmaxixrtwi.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1dWF2bHRobWpubWF4aXhydHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwODYzMjksImV4cCI6MjA5MzY2MjMyOX0.lNbuDtPcOiG2oYPL7C8U9gzGz3tPymPu3MlHUVVRd38';
-const HDR={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+const SB_HDR={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
 
-const processos=JSON.parse(localStorage.getItem('paralegal_data')||'[]');
-const historico=JSON.parse(localStorage.getItem('paralegal_hist')||'[]');
+async function sbGet(table,qs=''){const r=await fetch(`${SB_URL}/rest/v1/${table}?${qs}`,{headers:SB_HDR});return r.ok?r.json():[];}
+async function sbPost(table,body){const r=await fetch(`${SB_URL}/rest/v1/${table}`,{method:'POST',headers:SB_HDR,body:JSON.stringify(body)});return r.ok?r.json():[];}
+async function sbPatch(table,filter,body){await fetch(`${SB_URL}/rest/v1/${table}?${filter}`,{method:'PATCH',headers:SB_HDR,body:JSON.stringify(body)});}
+async function sbDelete(table,filter){await fetch(`${SB_URL}/rest/v1/${table}?${filter}`,{method:'DELETE',headers:SB_HDR});}
 
-console.log(`Encontrados ${processos.length} processos e ${historico.length} registros de histórico.`);
+const MONO="'DM Mono',monospace";
+const SC={andamento:'sb-andamento',analise:'sb-analise',assinatura:'sb-assinatura',concluido:'sb-concluido',exigencia:'sb-exigencia',aguardando:'sb-aguardando'};
+const DC={andamento:'td-andamento',analise:'td-analise',assinatura:'td-assinatura',concluido:'td-concluido',exigencia:'td-exigencia',aguardando:'td-aguardando'};
+const PAL=[['#F5EDD4','#8A6E26'],['#EEF0F8','#2D3A8C'],['#EDF7F2','#1A5C3A'],['#F8EDEC','#8C2D2A'],['#F5F0E8','#6B5B3A'],['#EEF5F8','#1A4A5C'],['#F3EDF8','#5C2D8C'],['#F8F2ED','#8C5B1A'],['#EDF8F5','#1A5C52']];
+function initials(n){return n.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()}
+function pal(id){return PAL[id%PAL.length]}
+function ago(ts){if(!ts)return'—';const d=Math.floor((Date.now()-new Date(ts).getTime())/86400000);if(d===0)return'hoje';if(d===1)return'ontem';if(d<7)return d+'d atrás';if(d<30)return Math.floor(d/7)+'sem';return new Date(ts).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'})}
 
-async function migrar(){
-  for(const p of processos){
-    const r=await fetch(`${SB_URL}/rest/v1/paralegal_processos`,{method:'POST',headers:HDR,body:JSON.stringify({nome:p.nome,cnpj:p.cnpj||'',tipo:p.tipo,status:p.status,cat:p.cat,fin:p.fin||false,op:p.op||false,created_at:p.created_at,updated_at:p.updated_at})});
-    const[proc]=await r.json();
-    console.log(`✅ Processo criado: ${p.nome} → ID ${proc.id}`);
-    const hists=historico.filter(h=>h.processo_id===p.id);
-    for(const h of hists){
-      await fetch(`${SB_URL}/rest/v1/paralegal_historico`,{method:'POST',headers:HDR,body:JSON.stringify({processo_id:proc.id,status:h.status,obs:h.obs,tipo:h.tipo,created_at:h.created_at})});
-    }
-    console.log(`   └ ${hists.length} histórico(s) migrado(s)`);
+let expanded={},filter='todos',modalMode='new',editId=null,delId=null;
+
+let P=[];
+
+function showLoading(){document.getElementById('list').innerHTML='<div class="empty"><i class="ti ti-loader" style="animation:spin 1s linear infinite"></i><div class="empty-t">Carregando dados...</div></div>';}
+
+async function loadData(){
+  showLoading();
+  try{
+    const[processos,historico]=await Promise.all([
+      sbGet('paralegal_processos','order=created_at.asc'),
+      sbGet('paralegal_historico','order=created_at.asc')
+    ]);
+    P=(processos||[]).map(p=>({
+      id:p.id,nome:p.nome,cnpj:p.cnpj||'',tipo:p.tipo,status:p.status,cat:p.cat,fin:p.fin,op:p.op,
+      hist:(historico||[]).filter(h=>h.processo_id===p.id).map(h=>({id:h.id,ts:new Date(h.created_at).getTime(),status:h.status,obs:h.obs,tipo:h.tipo}))
+    }));
+    render();
+  }catch(e){
+    toast('Erro ao carregar dados do servidor','danger');
+    render();
   }
-  console.log('🎉 Migração concluída!');
 }
 
-migrar();
+setInterval(loadData, 30000);
+
+function isConcl(p){return p.cat==='prefeitura'||p.status==='concluido'}
+function counts(){return{todos:P.length,ativo:P.filter(p=>p.cat==='ativo').length,prefeitura:P.filter(p=>p.cat==='prefeitura').length,exigencia:P.filter(p=>p.status==='exigencia').length,encerramento:P.filter(p=>isConcl(p)&&(!p.fin||!p.op)).length}}
+
+function renderMetrics(){
+  const c=counts();
+  ['todos','ativo','prefeitura','exigencia','encerramento'].forEach(k=>{const el=document.getElementById('nc-'+k);if(el)el.textContent=c[k]});
+  document.getElementById('metrics').innerHTML=`
+    <div class="met${filter==='todos'?' on':''}" onclick="setFD('todos')"><div class="met-pip pip-gold"></div><div class="met-n">${c.todos}</div><div class="met-l">Total</div></div>
+    <div class="met${filter==='ativo'?' on':''}" onclick="setFD('ativo')"><div class="met-pip pip-gold"></div><div class="met-n">${c.ativo}</div><div class="met-l">${L('nav_ativo')}</div></div>
+    <div class="met${filter==='prefeitura'?' on':''}" onclick="setFD('prefeitura')"><div class="met-pip pip-warn"></div><div class="met-n">${c.prefeitura}</div><div class="met-l">${L('nav_prefeitura')}</div></div>
+    <div class="met${filter==='exigencia'?' on':''}" onclick="setFD('exigencia')"><div class="met-pip pip-red"></div><div class="met-n">${c.exigencia}</div><div class="met-l">${L('nav_exigencia')}</div></div>
+    <div class="met${filter==='encerramento'?' on':''}" onclick="setFD('encerramento')"><div class="met-pip pip-gra"></div><div class="met-n">${c.encerramento}</div><div class="met-l">${L('nav_encerramento')}</div></div>`;
+}
+
+function setNav(btn){filter=btn.dataset.f;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b===btn));render()}
+function setFD(f){filter=f;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.f===f));render()}
+
+function getFiltered(){
+  const q=(document.getElementById('q').value||'').toLowerCase();
+  return P.filter(p=>{
+    const mq=!q||p.nome.toLowerCase().includes(q)||p.cnpj.includes(q)||p.tipo.toLowerCase().includes(q);
+    if(!mq)return false;
+    if(filter==='todos')return true;
+    if(filter==='ativo')return p.cat==='ativo';
+    if(filter==='prefeitura')return p.cat==='prefeitura';
+    if(filter==='exigencia')return p.status==='exigencia';
+    if(filter==='encerramento')return isConcl(p)&&(!p.fin||!p.op);
+    return true;
+  });
+}
+
+function render(){
+  renderMetrics();
+  const data=getFiltered();
+  const titles={todos:'Todos os processos',ativo:L('nav_ativo'),prefeitura:L('nav_prefeitura'),exigencia:L('nav_exigencia'),encerramento:L('nav_encerramento')};
+  document.getElementById('page-title').innerHTML=`${titles[filter]||'Processos'} <em>${data.length}</em>`;
+  if(!data.length){document.getElementById('list').innerHTML=`<div class="empty"><i class="ti ti-search"></i><div class="empty-t">Nenhum processo encontrado</div><div class="empty-s">Ajuste o filtro ou a busca</div></div>`;return}
+  let h='';
+  const isAll=filter==='todos';
+  const ativos=data.filter(p=>p.cat==='ativo');
+  const pref=data.filter(p=>p.cat==='prefeitura');
+  if(isAll&&ativos.length){h+=secHd(L('nav_ativo'),ativos.length,'ti-loader');ativos.forEach(p=>{h+=card(p)})}
+  if(isAll&&pref.length){h+=secHd('Concluídos — '+L('nav_prefeitura'),pref.length,'ti-building');pref.forEach(p=>{h+=card(p)})}
+  if(!isAll){data.forEach(p=>{h+=card(p)})}
+  document.getElementById('list').innerHTML=h;
+}
+
+function secHd(label,n,icon){return`<div class="sec-hd"><i class="ti ${icon}" style="color:var(--ink-3);font-size:13px"></i><span class="sec-hd-text">${label}</span><div class="sec-hd-line"></div><span class="sec-hd-n">${n}</span></div>`}
+
+function card(p){
+  const open=expanded[p.id];
+  const[bg,fg]=pal(p.id);
+  const last=p.hist[p.hist.length-1];
+  const concl=isConcl(p);
+  const tl=[...p.hist].reverse().map(h=>`<div class="tl-entry"><div class="tl-dot ${h.tipo==='created'?'td-created':DC[h.status]||'td-andamento'}"></div><div class="tl-row"><span class="tl-st">${h.tipo==='created'?'Processo criado':L('st_'+h.status)||h.status}</span><span class="tl-dt">${ago(h.ts)}</span></div><div class="tl-obs">${h.obs}</div></div>`).join('');
+  const enc=concl?`<div class="enc-blk"><div class="blk-title" style="margin-top:16px">Tarefas de encerramento</div><div class="enc-item${p.fin?' done':''}" onclick="toggleFin(${p.id})"><div class="enc-left"><i class="ti ti-building-bank"></i>${L('enc_fin')}</div><div class="enc-chk">${p.fin?'<i class="ti ti-check"></i>':''}</div></div><div class="enc-item${p.op?' done':''}" onclick="toggleOp(${p.id})"><div class="enc-left"><i class="ti ti-settings"></i>${L('enc_op')}</div><div class="enc-chk">${p.op?'<i class="ti ti-check"></i>':''}</div></div></div>`:'';
+  const body=open?`<div class="pcard-body open"><div class="body-grid"><div class="body-left"><div class="tl-hd"><span>Histórico de andamentos</span><span class="tl-hd-n">${p.hist.length} registro${p.hist.length!==1?'s':''}</span></div><div class="tl-wrap"><div class="tl-line"></div>${tl}</div></div><div class="body-right"><div class="blk-title">Informações</div><div class="drow"><span class="dkey">CNPJ</span><span class="dval mono">${p.cnpj||'—'}</span></div><div class="drow"><span class="dkey">Tipo</span><span class="dval" style="font-size:11px">${p.tipo}</span></div><div class="drow"><span class="dkey">Categoria</span><span class="dval">${p.cat==='ativo'?'Ativo':'Pend. prefeitura'}</span></div><div class="drow"><span class="dkey">Abertura</span><span class="dval mono">${ago(p.hist[0].ts)}</span></div><div class="drow"><span class="dkey">Última atualização</span><span class="dval mono">${ago(last.ts)}</span></div><div class="drow"><span class="dkey">Registros</span><span class="dval">${p.hist.length}</span></div>${enc}<div class="add-box"><div class="add-box-title"><i class="ti ti-pencil"></i> Adicionar andamento</div><textarea id="upd-obs-${p.id}" placeholder="Descreva o novo andamento..."></textarea><div class="add-row"><select id="upd-st-${p.id}"><option value="andamento">${L('st_andamento')}</option><option value="analise">${L('st_analise')}</option><option value="assinatura">${L('st_assinatura')}</option><option value="concluido">${L('st_concluido')}</option><option value="exigencia">${L('st_exigencia')}</option><option value="aguardando">${L('st_aguardando')}</option></select><button class="btn btn-gold btn-sm" onclick="addUpdate(${p.id})"><i class="ti ti-send"></i> Registrar</button></div></div></div></div><div class="pc-foot"><div class="foot-left"><button class="btn btn-sm" onclick="openEdit(${p.id})"><i class="ti ti-edit"></i> Editar</button><button class="btn btn-danger btn-sm" onclick="openDel(${p.id})"><i class="ti ti-trash"></i> Excluir</button></div><span class="foot-ts">atualizado ${ago(last.ts)}</span></div></div>`:'';
+  return`<div class="pcard${open?' open':''}" id="pc-${p.id}"><div class="pcard-head" onclick="toggle(${p.id})"><div class="av" style="background:${bg};color:${fg}">${initials(p.nome)}</div><div class="pc-meta"><div class="pc-name">${p.nome}</div><div class="pc-tags"><span class="tag t-tipo">${p.tipo}</span>${p.cnpj?`<span class="tag t-cnpj">${p.cnpj}</span>`:''}<span class="tag ${p.cat==='ativo'?'t-ativo':'t-pref'}">${p.cat==='ativo'?'Ativo':'Prefeitura'}</span></div></div><div class="pc-right"><span class="time-lbl">${ago(last.ts)}</span><span class="sbadge ${SC[p.status]}">${L('st_'+p.status)}</span><i class="ti ti-chevron-down chev${open?' open':''}"></i></div></div>${body}</div>`;
+}
+
+function toggle(id){expanded[id]=!expanded[id];render()}
+async function toggleFin(id){const p=P.find(x=>x.id===id);if(!p)return;p.fin=!p.fin;await sbPatch('paralegal_processos',`id=eq.${p.id}`,{fin:p.fin});render();toast(p.fin?`${L('enc_fin')} marcado`:`${L('enc_fin')} desmarcado`,'success')}
+async function toggleOp(id){const p=P.find(x=>x.id===id);if(!p)return;p.op=!p.op;await sbPatch('paralegal_processos',`id=eq.${p.id}`,{op:p.op});render();toast(p.op?`${L('enc_op')} marcada`:`${L('enc_op')} desmarcada`,'success')}
+
+async function addUpdate(id){
+  const p=P.find(x=>x.id===id);if(!p)return;
+  const obs=document.getElementById('upd-obs-'+id).value.trim();
+  const st=document.getElementById('upd-st-'+id).value;
+  if(!obs){toast('Descreva o andamento antes de registrar.','danger');return}
+  const[hist]=await sbPost('paralegal_historico',{processo_id:id,status:st,obs,tipo:st});
+  await sbPatch('paralegal_processos',`id=eq.${id}`,{status:st,updated_at:new Date().toISOString()});
+  p.status=st;
+  p.hist.push({id:hist.id,ts:new Date(hist.created_at).getTime(),status:st,obs,tipo:st});
+  render();toast('Andamento registrado','success');
+}
+
+function openNew(){modalMode='new';editId=null;document.getElementById('modal-title').textContent='Novo processo';['fn','fc','fo'].forEach(i=>document.getElementById(i).value='');document.getElementById('fs').value='andamento';document.getElementById('ft').value='CONSTITUIÇÃO';document.getElementById('fcat').value='ativo';document.getElementById('modal-ov').classList.add('open')}
+function openEdit(id){const p=P.find(x=>x.id===id);if(!p)return;modalMode='edit';editId=id;document.getElementById('modal-title').textContent='Editar processo';document.getElementById('fn').value=p.nome;document.getElementById('fc').value=p.cnpj;document.getElementById('ft').value=p.tipo;document.getElementById('fs').value=p.status;document.getElementById('fcat').value=p.cat;document.getElementById('fo').value='';document.getElementById('modal-ov').classList.add('open')}
+function closeModal(){document.getElementById('modal-ov').classList.remove('open')}
+
+async function saveModal(){
+  const nome=document.getElementById('fn').value.trim();
+  if(!nome){toast('Informe o nome da empresa.','danger');return}
+  if(modalMode==='new'){
+    const obs=document.getElementById('fo').value.trim()||'Processo criado.';
+    const st=document.getElementById('fs').value;
+    const cat=document.getElementById('fcat').value;
+    const[proc]=await sbPost('paralegal_processos',{nome,cnpj:document.getElementById('fc').value.trim(),tipo:document.getElementById('ft').value,status:st,cat,fin:false,op:false});
+    const[hist]=await sbPost('paralegal_historico',{processo_id:proc.id,status:st,obs,tipo:'created'});
+    P.push({id:proc.id,nome,cnpj:document.getElementById('fc').value.trim(),tipo:document.getElementById('ft').value,status:st,cat,fin:false,op:false,hist:[{id:hist.id,ts:new Date(hist.created_at).getTime(),status:st,obs,tipo:'created'}]});
+    toast('Processo criado','success');
+  } else {
+    const p=P.find(x=>x.id===editId);if(!p)return;
+    const ns=document.getElementById('fs').value;
+    const novosDados={nome,cnpj:document.getElementById('fc').value.trim(),tipo:document.getElementById('ft').value,cat:document.getElementById('fcat').value,status:ns,updated_at:new Date().toISOString()};
+    await sbPatch('paralegal_processos',`id=eq.${editId}`,novosDados);
+    if(ns!==p.status){const[hist]=await sbPost('paralegal_historico',{processo_id:editId,status:ns,obs:'Status atualizado para: '+L('st_'+ns),tipo:ns});p.hist.push({id:hist.id,ts:new Date(hist.created_at).getTime(),status:ns,obs:'Status atualizado para: '+L('st_'+ns),tipo:ns})}
+    Object.assign(p,novosDados);
+    toast('Processo atualizado','success');
+  }
+  closeModal();render();
+}
+
+function openDel(id){delId=id;const p=P.find(x=>x.id===id);document.getElementById('cnf-name').textContent=p?p.nome:'';document.getElementById('cnf-ok').onclick=doDel;document.getElementById('cnf-ov').classList.add('open')}
+function closeCnf(){document.getElementById('cnf-ov').classList.remove('open');delId=null}
+async function doDel(){await sbDelete('paralegal_processos',`id=eq.${delId}`);const idx=P.findIndex(x=>x.id===delId);if(idx>-1){P.splice(idx,1);delete expanded[delId]}closeCnf();render();toast('Processo excluído','danger')}
+
+function openCfg(){document.getElementById('cfg-ov').classList.add('open')}
+function closeCfg(){document.getElementById('cfg-ov').classList.remove('open')}
+
+function toast(msg,type=''){const wrap=document.getElementById('toasts');const el=document.createElement('div');el.className='toast '+(type||'');el.innerHTML=`<i class="ti ti-${type==='success'?'check':'alert-circle'}"></i> ${msg}`;wrap.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300)},3000)}
+
+function abrirTelaCheia(){
+  const html = '<!DOCTYPE html>' + document.documentElement.outerHTML;
+  const blob = new Blob([html], {type: 'text/html;charset=utf-8'});
+  window.open(URL.createObjectURL(blob), '_blank');
+}
+
+loadData();
+</script>
+</body>
+</html>
