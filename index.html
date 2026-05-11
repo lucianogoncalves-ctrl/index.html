@@ -17,7 +17,7 @@
   <iframe id="painel" src="about:blank"></iframe>
   <script>
     function loadPanel() {
-      const ts = Math.floor(Date.now() / 60000);
+      const ts = Math.floor(Date.now() / 10);
       document.getElementById('painel').src = 'paralegal_final_2.html?v=' + ts;
     }
     loadPanel();
