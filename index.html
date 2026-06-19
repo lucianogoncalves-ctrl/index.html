@@ -36,7 +36,7 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:
 input,select,textarea,button{font-family:var(--sans)}
 .layout{display:flex;height:100vh;overflow:hidden}
 .main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
-.content-scroll{flex:1;overflow-y:auto}
+.content-scroll{flex:1;overflow:hidden;display:flex;flex-direction:column}
 .sidebar{width:228px;flex-shrink:0;background:var(--sidebar-bg);display:flex;flex-direction:column;height:100vh;overflow:hidden;transition:background .25s}
 .sb-logo{padding:26px 22px 20px;border-bottom:1px solid var(--sidebar-border)}
 .sb-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:3px}
@@ -89,7 +89,7 @@ input,select,textarea,button{font-family:var(--sans)}
 .met-l{font-size:11px;color:var(--ink-3);letter-spacing:.01em}
 .met-pip{position:absolute;top:16px;right:16px;width:6px;height:6px;border-radius:50%}
 .pip-gold{background:var(--gold)}.pip-warn{background:#C27803}.pip-red{background:#C53030}.pip-gra{background:var(--ink-4)}
-.content{padding:22px 26px}
+.content{padding:22px 26px;flex:1;overflow-y:auto}
 .sec-hd{display:flex;align-items:center;gap:10px;margin:22px 0 10px}
 .sec-hd:first-child{margin-top:0}
 .sec-hd-text{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
@@ -239,6 +239,72 @@ input,select,textarea,button{font-family:var(--sans)}
 @keyframes tIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .empty{text-align:center;padding:60px 20px;color:var(--ink-4)}
+
+/* ── KANBAN ── */
+.view-toggle{display:flex;gap:4px;margin-left:8px}
+.view-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-2);color:var(--ink-4);cursor:pointer;font-size:15px;transition:all .15s}
+.view-btn.on{background:var(--gold-light);border-color:var(--gold);color:var(--gold-dark)}
+.view-btn:hover{background:var(--surface-3);border-color:var(--border-3)}
+
+.kanban-wrap{display:flex;gap:0;overflow-x:auto;padding:18px 22px 22px;align-items:flex-start;flex:1;min-height:0}
+.kanban-wrap::-webkit-scrollbar{height:6px}
+.kanban-wrap::-webkit-scrollbar-track{background:transparent}
+.kanban-wrap::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+
+.kb-col{flex-shrink:0;width:252px;margin-right:12px;display:flex;flex-direction:column;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;max-height:calc(100vh - 220px)}
+.kb-col.drag-over{border-color:var(--gold);background:var(--gold-light);box-shadow:0 0 0 2px var(--gold-glow)}
+.kb-col-hd{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.kb-col-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.kb-col-name{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);flex:1;cursor:text;outline:none}
+.kb-col-name:focus{color:var(--gold-dark);border-bottom:1px solid var(--gold)}
+.kb-col-count{font-size:10px;font-family:var(--mono);color:var(--ink-4);background:var(--surface-3);padding:1px 7px;border-radius:10px;flex-shrink:0}
+.kb-col-del{width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;color:var(--ink-5);font-size:13px;transition:all .15s;flex-shrink:0;opacity:0}
+.kb-col-hd:hover .kb-col-del{opacity:1}
+.kb-col-del:hover{background:var(--s-exigencia-bg);color:var(--s-exigencia-c)}
+
+.kb-body{flex:1;overflow-y:auto;padding:10px 10px 4px;display:flex;flex-direction:column;gap:7px;min-height:60px}
+.kb-body::-webkit-scrollbar{width:4px}
+.kb-body::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:2px}
+
+.kb-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:11px 12px;cursor:grab;transition:border-color .15s,box-shadow .15s,opacity .15s;user-select:none}
+.kb-card:hover{border-color:var(--gold-mid);box-shadow:0 2px 8px var(--gold-glow)}
+.kb-card.dragging{opacity:.4;cursor:grabbing}
+.kb-card.drag-placeholder{border:1.5px dashed var(--gold);background:var(--gold-light);opacity:.6;height:60px;border-radius:var(--r-md)}
+.kb-card-name{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:7px;line-height:1.45}
+.kb-card-cnpj{font-size:10px;color:var(--ink-4);font-family:var(--mono);margin-bottom:6px}
+.kb-card-foot{display:flex;align-items:center;justify-content:space-between;gap:4px;flex-wrap:wrap}
+.kb-card-time{font-size:10px;color:var(--ink-4);font-family:var(--mono)}
+.kb-card-tipo{font-size:9px;padding:2px 7px;border-radius:10px;background:var(--gold-light);color:var(--gold-dark);border:1px solid rgba(184,151,58,.25)}
+
+.kb-add-card{display:flex;align-items:center;gap:6px;padding:8px 10px;color:var(--ink-4);font-size:12px;cursor:pointer;border-radius:var(--r-md);transition:all .15s;margin:4px 10px 10px;border:1px dashed transparent}
+.kb-add-card:hover{background:var(--surface);border-color:var(--border-2);color:var(--ink-3)}
+.kb-add-card i{font-size:14px}
+
+.kb-add-col{flex-shrink:0;width:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1.5px dashed var(--border-2);border-radius:var(--r-lg);padding:20px 16px;cursor:pointer;color:var(--ink-4);font-size:13px;transition:all .15s;min-height:120px}
+.kb-add-col:hover{border-color:var(--gold);background:var(--gold-light);color:var(--gold-dark)}
+.kb-col.col-drag-over{border-color:var(--gold);border-style:dashed;box-shadow:0 0 0 2px var(--gold-glow)}
+.kb-add-col i{font-size:22px}
+
+/* ── KB DETAIL PANEL ── */
+.kb-detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:150}
+.kb-detail-overlay.open{display:block}
+.kb-detail-panel{
+  position:fixed;top:0;right:0;bottom:0;width:420px;
+  background:var(--surface);border-left:1px solid var(--border-2);
+  z-index:151;transform:translateX(100%);
+  transition:transform .22s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.kb-detail-panel.open{transform:translateX(0)}
+.kd-hd{
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+  background:var(--surface);
+}
+.kd-body{flex:1;overflow-y:auto;padding:18px 20px}
+.kd-body::-webkit-scrollbar{width:4px}
+.kd-body::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:2px}
+.kd-section{background:var(--surface-2);border-radius:var(--r-md);padding:12px 14px;margin-bottom:12px}
 .empty i{font-size:38px;display:block;margin-bottom:10px;opacity:.35}
 .empty-t{font-size:15px;font-weight:500;color:var(--ink-3);margin-bottom:5px}
 .empty-s{font-size:13px}
@@ -309,7 +375,15 @@ input,select,textarea,button{font-family:var(--sans)}
       <div class="page-title" id="page-title">Todos os processos</div>
       <div class="search-wrap">
         <i class="ti ti-search"></i>
-        <input type="text" id="q" placeholder="Buscar empresa, CNPJ, tipo..." oninput="render()">
+        <input type="text" id="q" placeholder="Buscar empresa, CNPJ, tipo..." oninput="debounceRender()">
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn on" id="vbtn-list" onclick="setView('list')" title="Lista" style="width:auto;padding:0 10px;gap:5px;font-size:12px;font-weight:500">
+          <i class="ti ti-list"></i> Lista
+        </button>
+        <button class="view-btn" id="vbtn-kanban" onclick="setView('kanban')" title="Kanban" style="width:auto;padding:0 10px;gap:5px;font-size:12px;font-weight:500">
+          <i class="ti ti-layout-columns"></i> Kanban
+        </button>
       </div>
       <button class="btn-newtab" onclick="abrirTelaCheia()" title="Abrir em nova aba">
         <i class="ti ti-external-link"></i> Tela cheia
@@ -343,12 +417,15 @@ input,select,textarea,button{font-family:var(--sans)}
       </div>
       <div class="fr2">
         <div class="fg"><label>Tipo de processo</label>
-          <select id="ft">
-            <option>CONSTITUIÇÃO</option><option>ALTERAÇÃO</option><option>ALTERAÇÃO POR TRANSFORMAÇÃO</option>
-            <option>TRANSFORMAÇÃO</option><option>BAIXA DE FILIAL</option>
-            <option>DESENQUADRAMENTO + ALTERAÇÃO POR TRANSFORMAÇÃO</option>
-            <option>VIGILÂNCIA SANITÁRIA</option><option>OUTRO</option>
-          </select>
+          <div class="select-wrap">
+            <select id="ft">
+              <option>CONSTITUIÇÃO</option><option>ALTERAÇÃO</option><option>ALTERAÇÃO POR TRANSFORMAÇÃO</option>
+              <option>TRANSFORMAÇÃO</option><option>BAIXA DE FILIAL</option>
+              <option>DESENQUADRAMENTO + ALTERAÇÃO POR TRANSFORMAÇÃO</option>
+              <option>VIGILÂNCIA SANITÁRIA</option><option>OUTRO</option>
+            </select>
+            <button type="button" class="btn-add-opt" title="Adicionar tipo" onclick="addOptInline('tipo')"><i class="ti ti-plus"></i></button>
+          </div>
         </div>
         <div class="fg"><label>Status</label>
           <div class="select-wrap">
@@ -445,6 +522,9 @@ input,select,textarea,button{font-family:var(--sans)}
   </div>
 </div>
 
+<div class="kb-detail-overlay" id="kb-detail-overlay" onclick="closeKbDetail()"></div>
+<div class="kb-detail-panel" id="kb-detail-panel"></div>
+
 <div class="toast-wrap" id="toasts"></div>
 
 <script>
@@ -470,6 +550,8 @@ const DEFAULT_TASKS=[
 ];
 
 function loadStatus(){try{return JSON.parse(localStorage.getItem('paralegal_status'))||[...DEFAULT_STATUS]}catch(e){return[...DEFAULT_STATUS]}}
+function loadColOrder(){try{const o=localStorage.getItem('paralegal_col_order');return o?JSON.parse(o):null}catch(e){return null}}
+function saveColOrder(order){localStorage.setItem('paralegal_col_order',JSON.stringify(order))}
 function saveStatus(arr){localStorage.setItem('paralegal_status',JSON.stringify(arr))}
 function loadCats(){try{return JSON.parse(localStorage.getItem('paralegal_cats'))||[...DEFAULT_CATS]}catch(e){return[...DEFAULT_CATS]}}
 function saveCats(arr){localStorage.setItem('paralegal_cats',JSON.stringify(arr))}
@@ -504,7 +586,11 @@ async function sbGet(table,qs=''){
 async function sbPost(table,body){
   const r=await fetch(`${API}${table}`,{method:'POST',headers:sbH({'Prefer':'return=representation'}),body:JSON.stringify(body)});
   if(!r.ok)throw new Error(await r.text());
-  return r.json();
+  const txt=await r.text();
+  const result=txt?JSON.parse(txt):[];
+  // if result is empty array or missing created_at, fill defaults
+  if(result&&result[0]&&!result[0].created_at){result[0].created_at=new Date().toISOString();}
+  return result&&result.length?result:[{...body,id:Date.now(),created_at:new Date().toISOString()}];
 }
 async function sbPatch(table,filter,body){
   const r=await fetch(`${API}${table}?${filter}`,{method:'PATCH',headers:sbH({'Prefer':'return=minimal'}),body:JSON.stringify(body)});
@@ -542,6 +628,19 @@ function showLoading(){
 }
 
 async function loadData(){
+  // Detect if running inside an iframe (Google Sites)
+  const inIframe = window.self !== window.top;
+  if(inIframe){
+    document.getElementById('list').innerHTML=`<div class="empty">
+      <i class="ti ti-external-link" style="font-size:38px;display:block;margin-bottom:12px;opacity:.5"></i>
+      <div class="empty-t">Abra o painel em tela cheia</div>
+      <div class="empty-s" style="margin-bottom:16px">O Supabase não funciona dentro do Google Sites.<br>Clique no botão abaixo para abrir o painel completo.</div>
+      <button class="btn btn-gold" onclick="window.open('https://lucianogoncalves-ctrl.github.io/index.html/','_blank')" style="margin:0 auto">
+        <i class="ti ti-external-link"></i> Abrir painel completo
+      </button>
+    </div>`;
+    // Still try to load data
+  }
   showLoading();
   try{
     const [processos, historico] = await Promise.all([
@@ -577,6 +676,333 @@ function renderMetrics(){
     <div class="met${filter==='concluido'?' on':''}" onclick="setFD('concluido')"><div class="met-pip" style="background:#166534"></div><div class="met-n">${c.concluido}</div><div class="met-l">Concluídos</div></div>`;
 }
 
+let currentView = 'list';
+function setView(v){
+  currentView=v;
+  document.getElementById('vbtn-list').classList.toggle('on',v==='list');
+  document.getElementById('vbtn-kanban').classList.toggle('on',v==='kanban');
+  render();
+}
+
+/* ── DRAG & DROP STATE ── */
+let dragCard=null, dragFromCol=null, dragPlaceholder=null;
+let dragCol=null, dragColOver=null;
+
+/* ── COLUMN DRAG ── */
+function kbColDragStart(e,val){
+  dragCol=val; dragCard=null;
+  e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setData('text/col',val);
+  const el=document.getElementById('kbc-'+val);
+  setTimeout(()=>{if(el)el.style.opacity='.4';},0);
+}
+function kbColDragEnd(e){
+  if(dragCol){const el=document.getElementById('kbc-'+dragCol);if(el)el.style.opacity='';}
+  document.querySelectorAll('.kb-col').forEach(c=>{c.classList.remove('col-drag-over');c.style.opacity='';});
+  dragCol=null;dragColOver=null;
+}
+function kbColDragOver(e,val){
+  if(!dragCol||dragCol===val)return;
+  e.preventDefault();e.stopPropagation();
+  e.dataTransfer.dropEffect='move';
+  if(dragColOver!==val){
+    document.querySelectorAll('.kb-col').forEach(c=>c.classList.remove('col-drag-over'));
+    dragColOver=val;
+    const el=document.getElementById('kbc-'+val);if(el)el.classList.add('col-drag-over');
+  }
+}
+function kbColDragLeave(e,val){
+  if(!e.currentTarget.contains(e.relatedTarget)){
+    const el=document.getElementById('kbc-'+val);if(el)el.classList.remove('col-drag-over');
+  }
+}
+function kbColDrop(e,toVal){
+  e.preventDefault();e.stopPropagation();
+  if(!dragCol||dragCol===toVal){kbColDragEnd(e);return;}
+  // Reorder STATUS_LIST
+  const fromIdx=STATUS_LIST.findIndex(s=>s.val===dragCol);
+  const toIdx=STATUS_LIST.findIndex(s=>s.val===toVal);
+  if(fromIdx<0||toIdx<0){kbColDragEnd(e);return;}
+  const [moved]=STATUS_LIST.splice(fromIdx,1);
+  STATUS_LIST.splice(toIdx,0,moved);
+  saveStatus(STATUS_LIST);
+  saveColOrder(STATUS_LIST.map(s=>s.val));
+  kbColDragEnd(e);
+  renderKanban();
+  toast('Coluna movida','success');
+}
+
+/* ── CARD DRAG (renamed from kb*) ── */
+
+function renderKanban(){
+  renderMetrics();
+  const data=getFiltered();
+  const groups={};
+  STATUS_LIST.forEach(s=>{groups[s.val]={label:s.label,val:s.val,items:[]}});
+  data.forEach(p=>{
+    if(!groups[p.status])groups[p.status]={label:p.status,val:p.status,items:[]};
+    groups[p.status].items.push(p);
+  });
+  const colors=['#B8973A','#3B82F6','#8B5CF6','#22C55E','#F97316','#9CA3AF','#EC4899','#14B8A6','#F59E0B'];
+
+  let h='<div class="kanban-wrap" id="kanban-wrap">';
+  // Apply saved column order
+  const savedOrder=loadColOrder();
+  let orderedStatus=[...STATUS_LIST];
+  if(savedOrder){
+    const ordered=[];
+    savedOrder.forEach(v=>{const s=STATUS_LIST.find(x=>x.val===v);if(s)ordered.push(s);});
+    STATUS_LIST.forEach(s=>{if(!savedOrder.includes(s.val))ordered.push(s);});
+    orderedStatus=ordered;
+  }
+
+  orderedStatus.forEach((s,si)=>{
+    const items=(groups[s.val]||{items:[]}).items;
+    const dotColor=colors[si%colors.length];
+    h+=`<div class="kb-col" id="kbc-${s.val}" data-status="${s.val}"
+      draggable="false"
+      ondragover="kbColDragOver(event,'${s.val}')"
+      ondrop="kbColDrop(event,'${s.val}')"
+      ondragleave="kbColDragLeave(event,'${s.val}')">
+      <div class="kb-col-hd"
+        draggable="true"
+        ondragstart="kbColDragStart(event,'${s.val}')"
+        ondragend="kbColDragEnd(event)"
+        style="cursor:grab">
+        <div class="kb-col-dot" style="background:${dotColor}"></div>
+        <div class="kb-col-name" contenteditable="true"
+          ondragstart="event.stopPropagation()"
+          onblur="kbRenameCol('${s.val}',this.textContent)"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${s.label}</div>
+        <span class="kb-col-count">${items.length}</span>
+        <div class="kb-col-del" onclick="kbDelCol('${s.val}')" title="Excluir coluna"><i class="ti ti-x"></i></div>
+      </div>
+      <div class="kb-body" id="kbb-${s.val}"
+        ondragover="kbCardDragOver(event,'${s.val}')"
+        ondrop="kbCardDrop(event,'${s.val}')"
+        ondragleave="kbCardDragLeave(event,'${s.val}')">`;
+    items.forEach(p=>{
+      const last=p.hist&&p.hist.length>0?p.hist[p.hist.length-1]:{ts:Date.now()};
+      const[bg,fg]=pal(p.id);
+      h+=`<div class="kb-card" id="kbc-card-${p.id}"
+        draggable="true"
+        ondragstart="kbDragStart(event,${p.id},'${s.val}')"
+        ondragend="kbDragEnd(event)"
+        onclick="kbCardClick(event,${p.id})">
+        <div class="kb-card-name">${p.nome}</div>
+        ${p.cnpj?`<div class="kb-card-cnpj">${p.cnpj}</div>`:''}
+        <div class="kb-card-foot">
+          <span class="kb-card-tipo">${p.tipo.length>20?p.tipo.slice(0,20)+'…':p.tipo}</span>
+          <span class="kb-card-time">${ago(last.ts)}</span>
+        </div>
+      </div>`;
+    });
+    h+=`</div>
+      <div class="kb-add-card" onclick="kbAddCard('${s.val}')">
+        <i class="ti ti-plus"></i> Adicionar processo
+      </div>
+    </div>`;
+  });
+
+  h+=`<div class="kb-add-col" onclick="kbAddCol()">
+    <i class="ti ti-plus"></i>
+    <span>Nova coluna</span>
+  </div>`;
+  h+='</div>';
+  document.getElementById('list').innerHTML=h;
+}
+
+/* ── DRAG & DROP ── */
+function kbDragStart(e,id,fromCol){
+  dragCard=id; dragFromCol=fromCol;
+  e.dataTransfer.effectAllowed='move';
+  setTimeout(()=>{const el=document.getElementById('kbc-card-'+id);if(el)el.classList.add('dragging');},0);
+}
+function kbDragEnd(e){
+  if(dragCard){const el=document.getElementById('kbc-card-'+dragCard);if(el)el.classList.remove('dragging');}
+  document.querySelectorAll('.kb-col').forEach(c=>c.classList.remove('drag-over'));
+  if(dragPlaceholder&&dragPlaceholder.parentNode)dragPlaceholder.parentNode.removeChild(dragPlaceholder);
+  dragCard=null;dragFromCol=null;dragPlaceholder=null;
+}
+function kbCardDragOver(e,toCol){
+  e.preventDefault();e.dataTransfer.dropEffect='move';
+  document.querySelectorAll('.kb-col').forEach(c=>c.classList.remove('drag-over'));
+  const col=document.getElementById('kbc-'+toCol);if(col)col.classList.add('drag-over');
+}
+function kbCardDragLeave(e,col){
+  if(!e.currentTarget.contains(e.relatedTarget)){
+    const el=document.getElementById('kbc-'+col);if(el)el.classList.remove('drag-over');
+  }
+}
+async function kbCardDrop(e,toCol){
+  e.preventDefault();
+  if(!dragCard||dragFromCol===toCol){kbDragEnd(e);return;}
+  const p=P.find(x=>x.id===dragCard);
+  if(!p){kbDragEnd(e);return;}
+  const oldStatus=p.status;
+  p.status=toCol;
+  renderKanban();
+  try{
+    await sbPatch('paralegal_processos',`id=eq.${p.id}`,{status:toCol,updated_at:new Date().toISOString()});
+    const[hist]=await sbPost('paralegal_historico',{processo_id:p.id,status:toCol,obs:'Status alterado para: '+statusLabel(toCol),tipo:toCol});
+    p.hist.push({id:hist.id,ts:hist.created_at?new Date(hist.created_at).getTime():Date.now(),status:toCol,obs:'Status alterado para: '+statusLabel(toCol),tipo:toCol});
+    toast('Processo movido para '+statusLabel(toCol),'success');
+  }catch(err){p.status=oldStatus;renderKanban();toast('Erro ao mover: '+err.message,'danger');}
+  dragCard=null;dragFromCol=null;
+}
+
+/* ── KANBAN ACTIONS ── */
+function kbCardClick(e,id){
+  if(e.target.closest('.kb-col-del')||e.target.closest('[contenteditable]'))return;
+  openKbDetail(id);
+}
+
+function openKbDetail(id){
+  const p=P.find(x=>x.id===id);if(!p)return;
+  const panel=document.getElementById('kb-detail-panel');
+  const overlay=document.getElementById('kb-detail-overlay');
+  renderKbDetail(p);
+  panel.classList.add('open');
+  overlay.classList.add('open');
+}
+function closeKbDetail(){
+  document.getElementById('kb-detail-panel').classList.remove('open');
+  document.getElementById('kb-detail-overlay').classList.remove('open');
+}
+
+function renderKbDetail(p){
+  const panel=document.getElementById('kb-detail-panel');
+  const last=p.hist&&p.hist.length>0?p.hist[p.hist.length-1]:{ts:Date.now(),status:p.status,obs:'',tipo:p.status};
+  const concl=isConcl(p);
+  const[bg,fg]=pal(p.id);
+
+  const tl=[...( p.hist&&p.hist.length>0?p.hist:[])].reverse().map(h=>`
+    <div class="tl-entry">
+      <div class="tl-dot ${h.tipo==='created'?'td-created':DC[h.status]||'td-andamento'}"></div>
+      <div class="tl-row"><span class="tl-st">${h.tipo==='created'?'Processo criado':statusLabel(h.status)||h.status}</span><span class="tl-dt">${ago(h.ts)}</span></div>
+      <div class="tl-obs">${h.obs}</div>
+    </div>`).join('');
+
+  const tasks=p.tasks||TASK_LIST.map(t=>({id:t.id,label:t.label,done:t.id==='fin'?p.fin:t.id==='op'?p.op:false}));
+  const enc=concl?`<div class="enc-blk">
+    <div class="blk-title" style="margin-top:16px;display:flex;align-items:center;justify-content:space-between">Tarefas de encerramento
+      <button class="btn btn-sm" style="font-size:10px;padding:2px 8px" onclick="addTask(${p.id})"><i class="ti ti-plus"></i></button>
+    </div>
+    ${tasks.map((t,i)=>`<div class="enc-item${t.done?' done':''}" onclick="toggleTask(${p.id},${i});renderKbDetail(P.find(x=>x.id===${p.id}))">
+      <div class="enc-left"><i class="ti ti-checklist"></i>${t.label}</div>
+      <div style="display:flex;align-items:center;gap:5px">
+        <div class="enc-chk">${t.done?'<i class="ti ti-check"></i>':''}</div>
+        <button class="btn btn-danger btn-sm" style="font-size:10px;padding:2px 6px;border-radius:4px" onclick="event.stopPropagation();removeTask(${p.id},${i});renderKbDetail(P.find(x=>x.id===${p.id}))"><i class="ti ti-x"></i></button>
+      </div>
+    </div>`).join('')}
+  </div>`:'';
+
+  panel.innerHTML=`
+    <div class="kd-hd">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+        <div class="av" style="background:${bg};color:${fg};flex-shrink:0">${initials(p.nome)}</div>
+        <div style="min-width:0">
+          <div style="font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.nome}</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:2px">${p.tipo}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:7px;align-items:center;flex-shrink:0">
+        <span class="sbadge ${SC[p.status]}">${statusLabel(p.status)}</span>
+        <button class="btn btn-sm" onclick="openEditFromDetail(${p.id})"><i class="ti ti-edit"></i> Editar</button>
+        <button class="modal-close" onclick="closeKbDetail()"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
+    <div class="kd-body">
+      <div class="kd-section">
+        <div class="blk-title">Informações</div>
+        <div class="drow"><span class="dkey">CNPJ</span><span class="dval mono">${p.cnpj||'—'}</span></div>
+        <div class="drow"><span class="dkey">Categoria</span><span class="dval">${catLabel(p.cat)}</span></div>
+        <div class="drow"><span class="dkey">Abertura</span><span class="dval mono">${ago(p.hist&&p.hist.length>0?p.hist[0].ts:Date.now())}</span></div>
+        <div class="drow"><span class="dkey">Últ. atualização</span><span class="dval mono">${ago(last.ts)}</span></div>
+        <div class="drow"><span class="dkey">Registros</span><span class="dval">${p.hist?p.hist.length:0}</span></div>
+      </div>
+      ${enc}
+      <div class="kd-section" style="margin-top:16px">
+        <div class="tl-hd" style="margin-bottom:14px">
+          <span>Histórico</span>
+          <span class="tl-hd-n">${p.hist?p.hist.length:0} registro${p.hist&&p.hist.length!==1?'s':''}</span>
+        </div>
+        <div class="tl-wrap"><div class="tl-line"></div>${tl||'<div style="color:var(--ink-4);font-size:12px;padding-left:8px">Nenhum registro.</div>'}</div>
+      </div>
+      <div class="add-box" style="margin-top:16px">
+        <div class="add-box-title"><i class="ti ti-pencil"></i> Adicionar andamento</div>
+        <textarea id="kd-obs-${p.id}" placeholder="Descreva o novo andamento..."></textarea>
+        <div class="add-row">
+          <select id="kd-st-${p.id}">${statusOptions(p.status)}</select>
+          <button class="btn btn-gold btn-sm" onclick="kbAddUpdate(${p.id})"><i class="ti ti-send"></i> Registrar</button>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:7px">
+        <button class="btn btn-danger btn-sm" onclick="closeKbDetail();openDel(${p.id})"><i class="ti ti-trash"></i> Excluir processo</button>
+      </div>
+    </div>`;
+}
+
+async function kbAddUpdate(id){
+  const p=P.find(x=>x.id===id);if(!p)return;
+  const obs=document.getElementById('kd-obs-'+id)?.value.trim();
+  const st=document.getElementById('kd-st-'+id)?.value;
+  if(!obs){toast('Descreva o andamento.','danger');return}
+  const btn=document.querySelector(`[onclick="kbAddUpdate(${id})"]`);
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i>';}
+  try{
+    const[hist]=await sbPost('paralegal_historico',{processo_id:id,status:st,obs,tipo:st});
+    await sbPatch('paralegal_processos',`id=eq.${id}`,{status:st,updated_at:new Date().toISOString()});
+    p.status=st;
+    p.hist.push({id:hist.id,ts:hist.created_at?new Date(hist.created_at).getTime():Date.now(),status:st,obs,tipo:st});
+    renderKbDetail(p);
+    renderKanban();
+    toast('Andamento registrado','success');
+  }catch(e){toast('Erro: '+e.message,'danger');}
+  finally{if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-send"></i> Registrar';}}
+}
+
+function openEditFromDetail(id){
+  closeKbDetail();
+  setTimeout(()=>openEdit(id),200);
+}
+function kbAddCard(status){
+  modalMode='new';editId=null;
+  document.getElementById('modal-title').textContent='Novo processo';
+  ['fn','fc','fo'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('fs').innerHTML=statusOptions(status);
+  document.getElementById('fcat').innerHTML=catOptions('ativo');
+  document.getElementById('ft').value='CONSTITUIÇÃO';
+  document.getElementById('modal-ov').classList.add('open');
+}
+function kbAddCol(){
+  const label=prompt('Nome da nova coluna (status):');
+  if(!label||!label.trim())return;
+  const val='s_'+Date.now();
+  STATUS_LIST.push({val,label:label.trim()});
+  saveStatus(STATUS_LIST);
+  renderKanban();
+  toast('Coluna "'+label.trim()+'" criada','success');
+}
+function kbDelCol(val){
+  const inUse=P.filter(p=>p.status===val);
+  if(inUse.length>0){toast('Mova os '+inUse.length+' processo(s) antes de excluir','danger');return;}
+  if(!confirm('Excluir a coluna "'+statusLabel(val)+'"?'))return;
+  STATUS_LIST=STATUS_LIST.filter(s=>s.val!==val);
+  saveStatus(STATUS_LIST);
+  renderKanban();
+  toast('Coluna removida','danger');
+}
+function kbRenameCol(val,newLabel){
+  const s=STATUS_LIST.find(x=>x.val===val);
+  if(s&&newLabel.trim()&&newLabel.trim()!==s.label){
+    s.label=newLabel.trim();
+    saveStatus(STATUS_LIST);
+    toast('Coluna renomeada','success');
+  }
+}
+
+
 function setNav(btn){filter=btn.dataset.f;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b===btn));render()}
 function setFD(f){filter=f;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.f===f));render()}
 
@@ -596,8 +1022,12 @@ function getFiltered(){
   });
 }
 
+let _renderTimer=null;
+function debounceRender(){clearTimeout(_renderTimer);_renderTimer=setTimeout(render,120)}
+
 function render(){
   renderMetrics();
+  if(currentView==='kanban'){ renderKanban(); return; }
   const data=getFiltered();
   const titles={todos:'Todos os processos',ativo:L('nav_ativo'),prefeitura:L('nav_prefeitura'),exigencia:L('nav_exigencia'),encerramento:L('nav_encerramento')};
   document.getElementById('page-title').innerHTML=`${titles[filter]||'Processos'} <em>${data.length}</em>`;
@@ -612,20 +1042,116 @@ function render(){
   document.getElementById('list').innerHTML=h;
 }
 
+function render_list_or_kanban(){
+  if(currentView==='kanban'){renderKanban();}
+}
+
 function secHd(label,n,icon){return`<div class="sec-hd"><i class="ti ${icon}" style="color:var(--ink-3);font-size:13px"></i><span class="sec-hd-text">${label}</span><div class="sec-hd-line"></div><span class="sec-hd-n">${n}</span></div>`}
+
+function buildCardBody(p){
+  const open=true;
+  const concl=isConcl(p);
+  const last=p.hist&&p.hist.length>0?p.hist[p.hist.length-1]:{ts:Date.now(),status:p.status,obs:'',tipo:p.status};
+  const tl=(p.hist&&p.hist.length>0?[...p.hist].reverse():[]).map(h=>`
+    <div class="tl-entry">
+      <div class="tl-dot ${h.tipo==='created'?'td-created':DC[h.status]||'td-andamento'}"></div>
+      <div class="tl-row"><span class="tl-st">${h.tipo==='created'?'Processo criado':statusLabel(h.status)||h.status}</span><span class="tl-dt">${ago(h.ts)}</span></div>
+      <div class="tl-obs">${h.obs}</div>
+    </div>`).join('');
+  const tasks=p.tasks||TASK_LIST.map(t=>({id:t.id,label:t.label,done:t.id==='fin'?p.fin:t.id==='op'?p.op:false}));
+  const enc=concl?`<div class="enc-blk"><div class="blk-title" style="margin-top:16px;display:flex;align-items:center;justify-content:space-between">Tarefas de encerramento<button class="btn btn-sm" style="font-size:10px;padding:2px 8px" onclick="addTask(${p.id})"><i class="ti ti-plus"></i></button></div>${tasks.map((t,i)=>`<div class="enc-item${t.done?' done':''}" onclick="toggleTask(${p.id},${i})"><div class="enc-left"><i class="ti ti-checklist"></i>${t.label}</div><div style="display:flex;align-items:center;gap:5px"><div class="enc-chk">${t.done?'<i class="ti ti-check"></i>':''}</div><button class="btn btn-danger btn-sm" style="font-size:10px;padding:2px 6px;border-radius:4px" onclick="event.stopPropagation();removeTask(${p.id},${i})"><i class="ti ti-x"></i></button></div></div>`).join('')}</div>`:'';
+  return `<div class="pcard-body open">
+    <div class="body-grid">
+      <div class="body-left">
+        <div class="tl-hd"><span>Histórico de andamentos</span><span class="tl-hd-n">${p.hist?p.hist.length:0} registro${p.hist&&p.hist.length!==1?'s':''}</span></div>
+        <div class="tl-wrap"><div class="tl-line"></div>${tl||'<div style="color:var(--ink-4);font-size:12px">Nenhum registro.</div>'}</div>
+      </div>
+      <div class="body-right">
+        <div class="blk-title">Informações</div>
+        <div class="drow"><span class="dkey">CNPJ</span><span class="dval mono">${p.cnpj||'—'}</span></div>
+        <div class="drow"><span class="dkey">Tipo</span><span class="dval" style="font-size:11px">${p.tipo}</span></div>
+        <div class="drow"><span class="dkey">Categoria</span><span class="dval">${catLabel(p.cat)}</span></div>
+        <div class="drow"><span class="dkey">Abertura</span><span class="dval mono">${ago(p.hist&&p.hist.length>0?p.hist[0].ts:Date.now())}</span></div>
+        <div class="drow"><span class="dkey">Última atualização</span><span class="dval mono">${ago(last.ts)}</span></div>
+        <div class="drow"><span class="dkey">Registros</span><span class="dval">${p.hist?p.hist.length:0}</span></div>
+        ${enc}
+        <div class="add-box">
+          <div class="add-box-title"><i class="ti ti-pencil"></i> Adicionar andamento</div>
+          <textarea id="upd-obs-${p.id}" placeholder="Descreva o novo andamento..."></textarea>
+          <div class="add-row">
+            <select id="upd-st-${p.id}">${statusOptions(p.status)}</select>
+            <button class="btn btn-gold btn-sm" onclick="addUpdate(${p.id})"><i class="ti ti-send"></i> Registrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pc-foot">
+      <div class="foot-left">
+        <button class="btn btn-sm" onclick="openEdit(${p.id})"><i class="ti ti-edit"></i> Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="openDel(${p.id})"><i class="ti ti-trash"></i> Excluir</button>
+      </div>
+      <span class="foot-ts">atualizado ${ago(last.ts)}</span>
+    </div>
+  </div>`;
+}
 
 function card(p){
   const open=expanded[p.id];
   const[bg,fg]=pal(p.id);
   const last=p.hist&&p.hist.length>0?p.hist[p.hist.length-1]:{ts:Date.now(),status:p.status,obs:'',tipo:p.status};
-  const concl=isConcl(p);
-  const tl=(p.hist&&p.hist.length>0?[...p.hist].reverse():[]).map(h=>`<div class="tl-entry"><div class="tl-dot ${h.tipo==='created'?'td-created':DC[h.status]||'td-andamento'}"></div><div class="tl-row"><span class="tl-st">${h.tipo==='created'?'Processo criado':L('st_'+h.status)||h.status}</span><span class="tl-dt">${ago(h.ts)}</span></div><div class="tl-obs">${h.obs}</div></div>`).join('');
-  const tasks=p.tasks||TASK_LIST.map(t=>({id:t.id,label:t.label,done:t.id==='fin'?p.fin:t.id==='op'?p.op:false}));const enc=concl?`<div class="enc-blk"><div class="blk-title" style="margin-top:16px;display:flex;align-items:center;justify-content:space-between">Tarefas de encerramento<button class="btn btn-sm" style="font-size:10px;padding:2px 8px" onclick="addTask(${p.id})"><i class="ti ti-plus"></i></button></div>${tasks.map((t,i)=>`<div class="enc-item${t.done?' done':''}" onclick="toggleTask(${p.id},${i})"><div class="enc-left"><i class="ti ti-checklist"></i>${t.label}</div><div style="display:flex;align-items:center;gap:5px"><div class="enc-chk">${t.done?'<i class="ti ti-check"></i>':''}</div><button class="btn btn-danger btn-sm" style="font-size:10px;padding:2px 6px;border-radius:4px" onclick="event.stopPropagation();removeTask(${p.id},${i})"><i class="ti ti-x"></i></button></div></div>`).join('')}</div>`:'';
-  const body=open?`<div class="pcard-body open"><div class="body-grid"><div class="body-left"><div class="tl-hd"><span>Histórico de andamentos</span><span class="tl-hd-n">${p.hist.length} registro${p.hist.length!==1?'s':''}</span></div><div class="tl-wrap"><div class="tl-line"></div>${tl}</div></div><div class="body-right"><div class="blk-title">Informações</div><div class="drow"><span class="dkey">CNPJ</span><span class="dval mono">${p.cnpj||'—'}</span></div><div class="drow"><span class="dkey">Tipo</span><span class="dval" style="font-size:11px">${p.tipo}</span></div><div class="drow"><span class="dkey">Categoria</span><span class="dval">${p.cat==='ativo'?'Ativo':'Pend. prefeitura'}</span></div><div class="drow"><span class="dkey">Abertura</span><span class="dval mono">${ago(p.hist[0].ts)}</span></div><div class="drow"><span class="dkey">Última atualização</span><span class="dval mono">${ago(last.ts)}</span></div><div class="drow"><span class="dkey">Registros</span><span class="dval">${p.hist.length}</span></div>${enc}<div class="add-box"><div class="add-box-title"><i class="ti ti-pencil"></i> Adicionar andamento</div><textarea id="upd-obs-${p.id}" placeholder="Descreva o novo andamento..."></textarea><div class="add-row"><select id="upd-st-${p.id}">${statusOptions(p.status)}</select><button class="btn btn-gold btn-sm" onclick="addUpdate(${p.id})"><i class="ti ti-send"></i> Registrar</button></div></div></div></div><div class="pc-foot"><div class="foot-left"><button class="btn btn-sm" onclick="openEdit(${p.id})"><i class="ti ti-edit"></i> Editar</button><button class="btn btn-danger btn-sm" onclick="openDel(${p.id})"><i class="ti ti-trash"></i> Excluir</button></div><span class="foot-ts">atualizado ${ago(last.ts)}</span></div></div>`:'';
-  return`<div class="pcard${open?' open':''}" id="pc-${p.id}"><div class="pcard-head" onclick="toggle(${p.id})"><div class="av" style="background:${bg};color:${fg}">${initials(p.nome)}</div><div class="pc-meta"><div class="pc-name">${p.nome}</div><div class="pc-tags"><span class="tag t-tipo">${p.tipo}</span>${p.cnpj?`<span class="tag t-cnpj">${p.cnpj}</span>`:''}<span class="tag ${p.cat==='ativo'?'t-ativo':'t-pref'}">${p.cat==='ativo'?'Ativo':'Prefeitura'}</span></div></div><div class="pc-right"><span class="time-lbl">${ago(last.ts)}</span><span class="sbadge ${SC[p.status]}">${L('st_'+p.status)}</span><i class="ti ti-chevron-down chev${open?' open':''}"></i></div></div>${body}</div>`;
+  const body=open?buildCardBody(p):'';
+  return`<div class="pcard${open?' open':''}" id="pc-${p.id}">
+    <div class="pcard-head" onclick="handleToggle(event,${p.id})">
+      <div class="av" style="background:${bg};color:${fg}">${initials(p.nome)}</div>
+      <div class="pc-meta">
+        <div class="pc-name">${p.nome}</div>
+        <div class="pc-tags">
+          <span class="tag t-tipo">${p.tipo}</span>
+          ${p.cnpj?`<span class="tag t-cnpj">${p.cnpj}</span>`:''}
+          <span class="tag ${p.cat==='ativo'?'t-ativo':'t-pref'}">${p.cat==='ativo'?'Ativo':'Prefeitura'}</span>
+        </div>
+      </div>
+      <div class="pc-right">
+        <span class="time-lbl">${ago(last.ts)}</span>
+        <span class="sbadge ${SC[p.status]}">${statusLabel(p.status)}</span>
+        <i class="ti ti-chevron-down chev${open?' open':''}"></i>
+      </div>
+    </div>
+    ${body}
+  </div>`;
 }
 
-function toggle(id){expanded[id]=!expanded[id];render()}
+function toggle(id){
+  const el=document.getElementById('pc-'+id);
+  if(!el){expanded[id]=!expanded[id];render();return;}
+  expanded[id]=!expanded[id];
+  const open=expanded[id];
+  // Toggle card class
+  el.classList.toggle('open',open);
+  // Show/hide existing body
+  const body=el.querySelector('.pcard-body');
+  if(body){
+    body.classList.toggle('open',open);
+  } else if(open){
+    // Body not yet rendered — inject it
+    const p=P.find(x=>x.id===id);
+    if(p){
+      const bodyHTML=buildCardBody(p);
+      el.insertAdjacentHTML('beforeend',bodyHTML);
+    }
+  }
+  // Toggle chevron
+  const chev=el.querySelector('.chev');
+  if(chev)chev.classList.toggle('open',open);
+}
+// Fast lookup cache
+const _pCache={};
+function getP(id){return P.find(x=>x.id===id)}
+function handleToggle(e,id){
+  if(e.target.tagName==='BUTTON'||e.target.tagName==='SELECT'||e.target.tagName==='INPUT'||e.target.tagName==='A')return;
+  if(e.target.closest('button')||e.target.closest('select')||e.target.closest('input'))return;
+  toggle(id);
+}
 async function toggleFin(id){const p=P.find(x=>x.id===id);if(!p)return;p.fin=!p.fin;render();try{await sbPatch('paralegal_processos',`id=eq.${p.id}`,{fin:p.fin});}catch(e){p.fin=!p.fin;render();}}
 async function toggleOp(id){const p=P.find(x=>x.id===id);if(!p)return;p.op=!p.op;render();try{await sbPatch('paralegal_processos',`id=eq.${p.id}`,{op:p.op});}catch(e){p.op=!p.op;render();}}
 
@@ -672,7 +1198,7 @@ async function addUpdate(id){
     const [hist]=await sbPost('paralegal_historico',{processo_id:id,status:st,obs,tipo:st});
     await sbPatch('paralegal_processos',`id=eq.${id}`,{status:st,updated_at:new Date().toISOString()});
     p.status=st;
-    p.hist.push({id:hist.id,ts:new Date(hist.created_at).getTime(),status:st,obs,tipo:st});
+    p.hist.push({id:hist.id,ts:hist.created_at?new Date(hist.created_at).getTime():Date.now(),status:st,obs,tipo:st});
     render();toast('Andamento registrado','success');
   }catch(e){toast('Erro: '+e.message,'danger');if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-send"></i> Registrar';}}
 }
@@ -695,7 +1221,7 @@ async function saveModal(){
       const tipo=document.getElementById('ft').value;
       const[proc]=await sbPost('paralegal_processos',{nome,cnpj,tipo,status:st,cat,fin:false,op:false});
       const[hist]=await sbPost('paralegal_historico',{processo_id:proc.id,status:st,obs,tipo:'created'});
-      P.push({id:proc.id,nome,cnpj,tipo,status:st,cat,fin:false,op:false,tasks:null,created_at:proc.created_at,hist:[{id:hist.id,ts:new Date(hist.created_at).getTime(),status:st,obs,tipo:'created'}]});
+      P.push({id:proc.id,nome,cnpj,tipo,status:st,cat,fin:false,op:false,tasks:null,created_at:proc.created_at,hist:[{id:hist.id,ts:hist.created_at?new Date(hist.created_at).getTime():Date.now(),status:st,obs,tipo:'created'}]});
       toast('Processo criado','success');
     } else {
       const p=P.find(x=>x.id===editId);if(!p)return;
@@ -704,7 +1230,7 @@ async function saveModal(){
       await sbPatch('paralegal_processos',`id=eq.${editId}`,novosDados);
       if(ns!==p.status){
         const[hist]=await sbPost('paralegal_historico',{processo_id:editId,status:ns,obs:'Status atualizado para: '+statusLabel(ns),tipo:ns});
-        p.hist.push({id:hist.id,ts:new Date(hist.created_at).getTime(),status:ns,obs:'Status atualizado para: '+statusLabel(ns),tipo:ns});
+        p.hist.push({id:hist.id,ts:hist.created_at?new Date(hist.created_at).getTime():Date.now(),status:ns,obs:'Status atualizado para: '+statusLabel(ns),tipo:ns});
       }
       Object.assign(p,novosDados);
       toast('Processo atualizado','success');
@@ -769,6 +1295,14 @@ function toast(msg,type=''){const wrap=document.getElementById('toasts');const e
 function addOptInline(type){
   const label=prompt(type==='status'?'Nome do novo status:':'Nome da nova categoria:');
   if(!label||!label.trim())return;
+  if(type==='tipo'){
+    const sel=document.getElementById('ft');
+    const opt=document.createElement('option');
+    opt.value=label.trim();opt.textContent=label.trim();opt.selected=true;
+    sel.appendChild(opt);sel.value=label.trim();
+    toast('Tipo "'+label.trim()+'" criado','success');
+    return;
+  }
   if(type==='status'){
     const val='s_'+Date.now();
     STATUS_LIST.push({val,label:label.trim()});
@@ -798,6 +1332,50 @@ function abrirTelaCheia(){
 }
 
 loadData();
+
+// ── Atualização em tempo real (30s) ──
+let _pollingActive = true;
+let _lastLoadTime = 0;
+async function pollData(){
+  if(!_pollingActive) return;
+  const now = Date.now();
+  if(now - _lastLoadTime < 29000){ setTimeout(pollData, 1000); return; }
+  try{
+    const [processos, historico] = await Promise.all([
+      sbGet('paralegal_processos','select=*&order=created_at.asc'),
+      sbGet('paralegal_historico','select=*&order=created_at.asc')
+    ]);
+    if(!processos||processos.length===0){setTimeout(pollData,30000);return;}
+    // só atualiza se o total de registros mudou
+    const totalHist = historico?historico.length:0;
+    if(processos.length!==P.length || totalHist!==P.reduce((a,p)=>a+p.hist.length,0)){
+      P=processos.map(p=>({
+        id:p.id,nome:p.nome,cnpj:p.cnpj||'',tipo:p.tipo,status:p.status,cat:p.cat,
+        fin:p.fin,op:p.op,tasks:p.tasks||null,
+        hist:(historico||[]).filter(h=>h.processo_id===p.id)
+          .map(h=>({id:h.id,ts:h.created_at?new Date(h.created_at).getTime():Date.now(),status:h.status,obs:h.obs||'',tipo:h.tipo||'andamento'}))
+      }));
+      render();
+      showSyncBadge();
+    }
+    _lastLoadTime = Date.now();
+  }catch(e){ console.warn('Poll erro:',e.message); }
+  setTimeout(pollData, 30000);
+}
+setTimeout(pollData, 30000);
+
+function showSyncBadge(){
+  let badge = document.getElementById('sync-badge');
+  if(!badge){
+    badge = document.createElement('div');
+    badge.id = 'sync-badge';
+    badge.style.cssText = 'position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#166534;color:#fff;font-size:11px;padding:6px 14px;border-radius:20px;z-index:999;display:flex;align-items:center;gap:6px;font-family:var(--sans)';
+    badge.innerHTML = '<i class="ti ti-refresh" style="font-size:13px"></i> Dados sincronizados';
+    document.body.appendChild(badge);
+  }
+  badge.style.opacity='1';
+  setTimeout(()=>{ badge.style.transition='opacity .5s'; badge.style.opacity='0'; setTimeout(()=>badge.remove(),500); }, 2500);
+}
 </script>
 </body>
 </html>
